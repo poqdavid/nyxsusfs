@@ -1,0 +1,19 @@
+#!/bin/sh
+# Stand-in for bin/nyxsusfs priority-filter: counts the chosen apps (or the
+# user apps), writes the status file like the real one and logs each run to
+# data/adb/nyxtest/nyxsusfs.log.
+R=$NYX_TEST_ROOT
+echo "$*" >> "$R/data/adb/nyxtest/nyxsusfs.log"
+[ "$1" = priority-filter ] || exit 2
+mode=$(sed -n 's/^priority_uid_filter=//p' "$R/data/adb/nyxsusfs/config.sh")
+case "$mode" in
+1) n=$(grep -cE '^[[:space:]]*[a-zA-Z]' "$R/data/adb/nyxsusfs/priority_uid_filter.txt" 2> /dev/null) ;;
+2) n=3 ;;
+*)
+    echo "state=off"
+    exit 0
+    ;;
+esac
+state=applied
+[ "$n" -gt 0 ] || state=empty
+printf 'state=%s\napps=%s\nskipped=0\nfrom=webui\n' "$state" "$n" | tee "$R/data/adb/ksu/nyxsusfs/priority_uid_filter"

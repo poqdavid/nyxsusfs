@@ -1,0 +1,23 @@
+# Build artifacts
+*.sha256
+*.zip
+build/
+out/
+node_modules/
+module/LICENSE
+module/NOTICE.md
+# The WebUI script, bundled from webui/src at build time (npm run build)
+module/webroot/js/
+# ksu_susfs, built from simonpunk's susfs4ksu (scripts/build-ksu-susfs.sh)
+module/tools/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+
+# Rust
+/target/
+module/bin/nyxsusfs
+
+# Python bytecode from the CI test scripts
+__pycache__/

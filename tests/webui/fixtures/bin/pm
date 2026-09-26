@@ -1,0 +1,3 @@
+#!/bin/sh
+[ "$*" = "list packages -3" ] && printf 'package:org.nyx.test\npackage:com.example.app\npackage:com.zeta.app\n'
+exit 0

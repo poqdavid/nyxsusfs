@@ -1,0 +1,4 @@
+1 0 253:0 / / ro,relatime shared:1 - ext4 /dev/block/dm-0 ro
+2000000001 1 0:55 / /debug_ramdisk rw,relatime shared:2 - tmpfs KSU rw
+2000000002 1 0:56 /adb/modules/modA/system/bin/tool /system/bin/tool ro shared:3 - ext4 /dev/block/dm-5 ro
+45 1 0:59 / /vendor ro shared:6 - ext4 /dev/block/dm-1 ro

@@ -1,0 +1,9 @@
+[sus_path]: added /data/adb/modules/foo
+[sus_path]: added /system/addon.d
+[sus_path_loop]: added /data/local/tmp/nyx dir
+[sus_map]: added /data/adb/modules/zygisk/lib.so
+[sus_map]: added /system/framework/framework-res.apk
+[sus_mount]: added /system/etc/hosts
+[try_umount]: added /system/etc/hosts
+[try_umount skipped]: backend /vendor/bin/x
+[sus_path]: added /data/adb/modules/foo

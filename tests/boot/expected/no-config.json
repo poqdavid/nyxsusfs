@@ -1,0 +1,152 @@
+{
+ "scenario": "no-config",
+ "stages": [
+  {
+   "stage": "post-fs-data",
+   "exit": 0,
+   "calls": [
+    "dmesg",
+    "ksu_susfs [hide_sus_mnts_for_non_su_procs] [0]",
+    "ksu_susfs [show] [enabled_features]",
+    "ksu_susfs [show] [version]"
+   ],
+   "changed": {
+    "/data/adb/ksu/nyxsusfs/logs": [
+     "0o755",
+     "0:0",
+     null
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/boot_stage_time.sh": [
+     "0o644",
+     "0:0",
+     "post_fs_data=101.000001\n"
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/susfs.log": [
+     "0o644",
+     "0:0",
+     "\n[    1.234567] susfs: init\n[    2.500000] ksu_susfs: something\n[   12.345678] susfs: set SUS_MOUNT for /debug_ramdisk\n[   13.000001] susfs_auto_add_sus_bind_mount: /system/etc/hosts\n[   20.000000] SUSFS: upper-case line\n[  101.000001] susfs: stage marker 1"
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/susfs1.log": [
+     "0o644",
+     "0:0",
+     "\n[hide_sus_mnts_for_non_su_procs = 0]: nyxsusfs/post-fs-data\nnyxsusfs/post-fs-data: [logging_initialized]"
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/susfs_active": [
+     "0o644",
+     "0:0",
+     ""
+    ],
+    "/data/adb/modules/nyxsusfs/module.prop": [
+     "0o644",
+     "0:0",
+     "id=nyxsusfs\nname=NyxSUSFS\nversion=<module.prop>\nversionCode=<module.prop>\nauthor=poqdavid\ndescription=[Status: Waiting for reboot] A modern SuSFS companion for KernelSU/KernelSU-Next with a Material You WebUI. Config-compatible with ksu_module_susfs.\nupdateJson=https://raw.githubusercontent.com/poqdavid/nyxsusfs/main/update.json\n"
+    ],
+    "/mnt/nyxsusfs": [
+     "0o755",
+     "0:0",
+     null
+    ]
+   },
+   "removed": []
+  },
+  {
+   "stage": "post-mount",
+   "exit": 0,
+   "calls": [
+    "dmesg"
+   ],
+   "changed": {
+    "/data/adb/ksu/nyxsusfs/logs/boot_stage_time.sh": [
+     "0o644",
+     "0:0",
+     "post_fs_data=101.000001\npost_mount=102.000002\n"
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/susfs.log": [
+     "0o644",
+     "0:0",
+     "\n[    1.234567] susfs: init\n[    2.500000] ksu_susfs: something\n[   12.345678] susfs: set SUS_MOUNT for /debug_ramdisk\n[   13.000001] susfs_auto_add_sus_bind_mount: /system/etc/hosts\n[   20.000000] SUSFS: upper-case line\n[  101.000001] susfs: stage marker 1\n[  101.000001] susfs: stage marker 1\n[  102.000002] susfs: stage marker 2"
+    ]
+   },
+   "removed": []
+  },
+  {
+   "stage": "service",
+   "exit": 0,
+   "calls": [
+    "dmesg",
+    "ksu_susfs [add_sus_path] [/proc/fs/ext4/loop0]",
+    "ksu_susfs [add_sus_path] [/proc/fs/ext4/loop18]",
+    "ksu_susfs [add_sus_path] [/proc/fs/ext4/loop3]",
+    "ksu_susfs [add_sus_path] [/proc/fs/jbd2/loop0-8]",
+    "ksu_susfs [add_sus_path] [/proc/fs/jbd2/loop18-8]",
+    "ksu_susfs [add_sus_path] [/proc/fs/jbd2/loop3-8]",
+    "ksu_susfs [enable_log] [1]",
+    "ksu_susfs [show] [enabled_features]",
+    "ksu_susfs [show] [version]",
+    "resetprop [-w] [sys.boot_completed] [0]"
+   ],
+   "changed": {
+    "/data/adb/ksu/nyxsusfs/logs/boot_stage_time.sh": [
+     "0o644",
+     "0:0",
+     "post_fs_data=101.000001\npost_mount=102.000002\nservice=103.000003\n"
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/susfs.log": [
+     "0o644",
+     "0:0",
+     "\n[    1.234567] susfs: init\n[    2.500000] ksu_susfs: something\n[   12.345678] susfs: set SUS_MOUNT for /debug_ramdisk\n[   13.000001] susfs_auto_add_sus_bind_mount: /system/etc/hosts\n[   20.000000] SUSFS: upper-case line\n[  101.000001] susfs: stage marker 1\n[  101.000001] susfs: stage marker 1\n[  102.000002] susfs: stage marker 2\n[  102.000002] susfs: stage marker 2\n[  103.000003] susfs: stage marker 3"
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/susfs1.log": [
+     "0o644",
+     "0:0",
+     "\n[hide_sus_mnts_for_non_su_procs = 0]: nyxsusfs/post-fs-data\n[sus_path]: nyxsusfs/service /proc/fs/ext4/loop0\n[sus_path]: nyxsusfs/service /proc/fs/ext4/loop18\n[sus_path]: nyxsusfs/service /proc/fs/ext4/loop3\n[sus_path]: nyxsusfs/service /proc/fs/jbd2/loop0-8\n[sus_path]: nyxsusfs/service /proc/fs/jbd2/loop18-8\n[sus_path]: nyxsusfs/service /proc/fs/jbd2/loop3-8\nnyxsusfs/post-fs-data: [logging_initialized]\nnyxsusfs/service: [hide_loops]"
+    ]
+   },
+   "removed": []
+  },
+  {
+   "stage": "boot-completed",
+   "exit": 0,
+   "calls": [
+    "dmesg",
+    "dmesg",
+    "ksu_susfs [show] [enabled_features]",
+    "ksu_susfs [show] [version]"
+   ],
+   "changed": {
+    "/data/adb/ksu/nyxsusfs/logs/boot_stage_time.sh": [
+     "0o644",
+     "0:0",
+     "post_fs_data=101.000001\npost_mount=102.000002\nservice=103.000003\nboot_completed=104.000004\n"
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/susfs.log": [
+     "0o644",
+     "0:0",
+     "\n[    1.234567] susfs: init\n[    2.500000] ksu_susfs: something\n[   12.345678] susfs: set SUS_MOUNT for /debug_ramdisk\n[   13.000001] susfs_auto_add_sus_bind_mount: /system/etc/hosts\n[   20.000000] SUSFS: upper-case line\n[  101.000001] susfs: stage marker 1\n[  101.000001] susfs: stage marker 1\n[  102.000002] susfs: stage marker 2\n[  102.000002] susfs: stage marker 2\n[  103.000003] susfs: stage marker 3\n[  103.000003] susfs: stage marker 3\n[  104.000004] susfs: stage marker 4\n[  104.000004] susfs: stage marker 4\n[  105.000005] susfs: stage marker 5"
+    ],
+    "/data/adb/ksu/nyxsusfs/susfs_stats.txt": [
+     "0o644",
+     "0:0",
+     "sus_map=0\nsus_mount=5\ntry_umount=<racy>\nsus_path=0\n"
+    ],
+    "/data/adb/modules/nyxsusfs/module.prop": [
+     "0o644",
+     "0:0",
+     "id=nyxsusfs\nname=NyxSUSFS\nversion=<module.prop>\nversionCode=<module.prop>\nauthor=poqdavid\ndescription=[✅ Active] susfs v2.3.0 — details in the WebUI\nupdateJson=https://raw.githubusercontent.com/poqdavid/nyxsusfs/main/update.json\n"
+    ]
+   },
+   "removed": []
+  },
+  {
+   "stage": "priority-filter",
+   "exit": 0,
+   "calls": [
+    "ksu_susfs [show] [enabled_features]",
+    "ksu_susfs [show] [version]"
+   ],
+   "changed": {},
+   "removed": [],
+   "stdout": "state=off\n"
+  }
+ ]
+}

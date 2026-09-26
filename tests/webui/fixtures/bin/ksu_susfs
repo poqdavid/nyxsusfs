@@ -1,0 +1,24 @@
+#!/bin/sh
+# data/adb/nyxtest/susfs_mode:
+#   none  a kernel without SuSFS: ksu_susfs prints the kernel's refusal and
+#         exits with its error
+#   old   a ksu_susfs build without set_priority_uid_filter
+mode=$(cat "${NYX_TEST_ROOT}/data/adb/nyxtest/susfs_mode" 2> /dev/null)
+if [ "$mode" = none ]; then
+    echo "[-] CMD: '0x555e1', SUSFS operation not supported, please enable it in kernel"
+    exit 126
+fi
+if [ -z "$1" ]; then
+    echo "usage: ksu_susfs <CMD> [CMD options]"
+    for c in add_sus_path add_sus_path_loop add_sus_map set_priority_uid_filter add_open_redirect show; do
+        [ "$mode" = old ] && [ "$c" = set_priority_uid_filter ] && continue
+        echo "    $c <args>"
+    done
+    exit 234
+fi
+case "$1 $2" in
+"show version") echo v2.3.0 ;;
+"show variant") echo GKI ;;
+"show enabled_features") printf 'CONFIG_KSU_SUSFS_SUS_PATH\nCONFIG_KSU_SUSFS_SUS_MOUNT\nCONFIG_KSU_SUSFS_SUS_KSTAT\nCONFIG_KSU_SUSFS_SPOOF_UNAME\nCONFIG_KSU_SUSFS_ENABLE_LOG\nCONFIG_KSU_SUSFS_HIDE_KSU_SUSFS_SYMBOLS\nCONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG\nCONFIG_KSU_SUSFS_OPEN_REDIRECT\nCONFIG_KSU_SUSFS_SUS_MAP\n' ;;
+*) exit 0 ;;
+esac
