@@ -1,0 +1,12 @@
+# Paths to hide via sus_path, applied at boot-completed.
+# Lines starting with # are ignored.
+#
+# format: <path> [max seconds to wait for it to exist]
+#   The second column is optional. Without it the path is added
+#   immediately; with it, Nyx waits up to that many seconds for the path
+#   to appear first - useful for paths created late in boot.
+#
+# example:
+# /system/addon.d
+# /vendor/bin/install-recovery.sh 1
+# /system/bin/install-recovery.sh 15

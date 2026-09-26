@@ -1,0 +1,12 @@
+## Let netd look up files/directories labeled "shell", e.g. a custom hosts
+## file bind-mounted from /data/adb/ onto /system/etc/hosts
+allow netd adb_data_file dir {search}
+
+## Let zygote look up apk files bind-mounted from inside /data/adb/
+allow zygote apk_data_file dir {search}
+
+## Let zygote look up files/directories labeled "shell", e.g. in /data/local/tmp/
+allow zygote shell_data_file dir {search}
+
+## Needed for SUSFS's own try_umount on the zygote side
+allow zygote labeledfs filesystem unmount

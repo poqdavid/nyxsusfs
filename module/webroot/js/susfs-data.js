@@ -1,0 +1,419 @@
+import { exec } from './ksu-bridge.js';
+
+// Nyx's own directories - separate from ksu_module_susfs's
+// /data/adb/susfs4ksu, so the two modules never contend over the same
+// config.sh or logs if both happen to be installed. customize.sh imports
+// an existing ksu_module_susfs config into this directory once, at
+// install time, then Nyx only ever touches its own copy after that.
+export const MOD_DIR = '/data/adb/modules/nyxsusfs';
+export const PERSISTENT_DIR = '/data/adb/nyxsusfs';
+export const TMP_DIR = '/data/adb/ksu/nyxsusfs';
+export const PROPS_DIR = `${PERSISTENT_DIR}/props`;
+export const CONFIG_PATH = `${PERSISTENT_DIR}/config.sh`;
+export const STATS_PATH = `${TMP_DIR}/susfs_stats.txt`;
+export const LOG1_PATH = `${TMP_DIR}/logs/susfs1.log`;
+export const LOG_PATH = `${TMP_DIR}/logs/susfs.log`;
+export const SUSFS_BIN = '/data/adb/ksu/bin/ksu_susfs';
+
+// Each home-screen stat is counted from a specific set of sources in
+// boot-completed.sh. The drill-down list has to read the SAME sources or
+// the number and the list disagree - e.g. sus_mount is counted from the
+// kernel log plus /proc/1/mountinfo, so listing only the userspace tags
+// showed "nothing recorded" next to a non-zero count.
+//
+// userspace : actions this module took, tagged into susfs1.log
+// kernel    : lines susfs itself printed, captured from dmesg into susfs.log
+// mountinfo : live mounts matching the same pattern the counter uses
+const CATEGORY_SOURCES = {
+	sus_path: {
+		userspace: '^\\[sus_path\\]:|^\\[sus_path_loop\\]:',
+	},
+	sus_mount: {
+		userspace: '^\\[sus_mount\\]:',
+		kernel: 'set SUS_MOUNT|to LH_SUS_MOUNT',
+		mountinfo: true,
+	},
+	sus_map: {
+		userspace: '^\\[sus_map\\]:',
+		kernel: 'AS_FLAGS_SUS_MAP',
+	},
+	try_umount: {
+		userspace: '^\\[try_umount',
+		kernel: 'to LH_TRY_UMOUNT_PATH',
+	},
+	prop: {
+		userspace: '^\\[prop\\]:',
+	},
+};
+
+// Strip the leading "[tag]: source " so the entry is just the path. Kept
+// as a sub-expression rather than $NF because some Android paths contain
+// spaces and would be truncated by whitespace splitting.
+const STRIP_TAG = `awk '{ line=$0; sub(/^[^ \\t]+[ \\t]+[^ \\t]+[ \\t]+/, "", line); print line }'`;
+// Drop the "[   12.345678] " kernel timestamp so lines are readable.
+const STRIP_TIMESTAMP = `sed 's/^\\[[[:space:]]*[0-9.]*\\][[:space:]]*//'`;
+
+async function grepLines(cmd) {
+	const { stdout, errno } = await exec(cmd);
+	if (errno !== 0) return [];
+	return stdout.split('\n').map((s) => s.trim()).filter(Boolean);
+}
+
+/** Flat list of just this module's own tagged actions. */
+export async function getCategoryEntries(category) {
+	const src = CATEGORY_SOURCES[category];
+	if (!src || !src.userspace) return [];
+	return grepLines(
+		`grep -E '${src.userspace}' '${LOG1_PATH}' 2>/dev/null | ${STRIP_TAG} | sort -u`
+	);
+}
+
+/**
+ * Grouped detail for a home-screen stat, covering every source that feeds
+ * that stat's counter. Returns [{ label, items }].
+ */
+export async function getCategoryDetail(category) {
+	const src = CATEGORY_SOURCES[category];
+	if (!src) return [];
+	const groups = [];
+
+	if (src.userspace) {
+		const items = await getCategoryEntries(category);
+		if (items.length) groups.push({ label: 'Added by NyxSUSFS', items });
+	}
+
+	if (src.kernel) {
+		const items = await grepLines(
+			`grep -iE '${src.kernel}' '${LOG_PATH}' 2>/dev/null | ${STRIP_TIMESTAMP} | sort -u`
+		);
+		if (items.length) groups.push({ label: 'Reported by the kernel', items });
+	}
+
+	if (src.mountinfo) {
+		// Same pattern boot-completed.sh counts with, so the two agree.
+		const items = await grepLines(
+			`grep -E '^[25][0-9]{5,9} .* (KSU|shared).*$' /proc/1/mountinfo 2>/dev/null | awk '{print $5}' | sort -u`
+		);
+		if (items.length) groups.push({ label: 'Matching mounts in /proc/1/mountinfo', items });
+	}
+
+	return groups;
+}
+
+// Reverses the POSIX single-quote escape ' -> '\'' that setConfigValue
+// writes for text values, so a value that itself contained an apostrophe
+// reads back exactly as typed instead of picking up escape artifacts.
+function unescapeShellSingleQuoted(inner) {
+	return inner.split("'\\''").join("'");
+}
+
+export async function getSusfsInfo() {
+	const [version, variant, features] = await Promise.all([
+		exec(`${SUSFS_BIN} show version 2>/dev/null`),
+		exec(`${SUSFS_BIN} show variant 2>/dev/null`),
+		exec(`${SUSFS_BIN} show enabled_features 2>/dev/null`),
+	]);
+	const featureList = features.stdout.split('\n').map((s) => s.trim()).filter(Boolean);
+	return {
+		version: version.stdout.trim() || null,
+		variant: variant.stdout.trim() || null,
+		features: featureList,
+		active: version.errno === 0 && version.stdout.trim().length > 0,
+	};
+}
+
+/**
+ * Per-category counts for the home "This boot" cards. Derived from EXACTLY
+ * the sources getCategoryDetail shows, so a card's number always equals the
+ * number of rows you see when you tap it - the two cannot drift apart.
+ *
+ * (They used to: the count came from a boot-time susfs_stats.txt grepped with
+ * kernel-log patterns like AS_FLAGS_SUS_MAP, while the list greps Nyx's own
+ * userspace [sus_*]: tags. On a kernel that doesn't emit those strings the
+ * card read 0 while the list was full. Counting the detail rows removes the
+ * second source entirely.)
+ */
+export async function getStats() {
+	const cats = ['sus_path', 'sus_mount', 'sus_map', 'try_umount'];
+	const details = await Promise.all(cats.map((c) => getCategoryDetail(c)));
+	const stats = { sus_path: 0, sus_mount: 0, sus_map: 0, try_umount: 0 };
+	cats.forEach((c, i) => {
+		stats[c] = details[i].reduce((n, g) => n + g.items.length, 0);
+	});
+	return stats;
+}
+
+export async function getConfig() {
+	const { stdout, errno } = await exec(`cat '${CONFIG_PATH}' 2>/dev/null`);
+	const config = {};
+	if (errno === 0) {
+		for (const line of stdout.split('\n')) {
+			const trimmed = line.trim();
+			if (!trimmed || trimmed.startsWith('#')) continue;
+			const idx = trimmed.indexOf('=');
+			if (idx < 0) continue;
+			const key = trimmed.slice(0, idx);
+			const raw = trimmed.slice(idx + 1);
+			let value = raw;
+			const singleQuoted = raw.match(/^'([\s\S]*)'$/);
+			const doubleQuoted = raw.match(/^"([\s\S]*)"$/);
+			if (singleQuoted) {
+				value = unescapeShellSingleQuoted(singleQuoted[1]);
+			} else if (doubleQuoted) {
+				value = doubleQuoted[1];
+			}
+			config[key] = value;
+		}
+	}
+	return config;
+}
+
+/** Escapes a value for a POSIX single-quoted shell literal, matching how
+ * the shipped config.sh quotes its text values. */
+function toShellLiteral(value) {
+	const str = String(value);
+	if (/^-?\d+$/.test(str)) return str;
+	return `'${str.replace(/'/g, "'\\''")}'`;
+}
+
+/**
+ * Writes one key back into config.sh (updating it in place, or appending
+ * it if it's not there yet). Boot-stage scripts re-read this file every
+ * boot, so most changes need a reboot to take effect - the settings page
+ * surfaces that per toggle.
+ *
+ * The edit is done here in JS and the whole file is written back through
+ * the same base64 path setListFile uses, deliberately. Doing it with a
+ * shell one-liner instead would mean depending on either exec()'s `env`
+ * option (not guaranteed to be honoured by every manager build) or on
+ * `awk -v`, which performs backslash-escape processing on the value it is
+ * given. Round-tripping base64 depends on neither, and the value is never
+ * re-parsed as shell syntax at any point.
+ */
+export async function setConfigValue(key, value) {
+	const { stdout, errno } = await exec(`cat '${CONFIG_PATH}' 2>/dev/null`);
+	if (errno !== 0) return { ok: false, error: 'could not read config.sh' };
+
+	const literal = toShellLiteral(value);
+	const lines = stdout.split('\n');
+	let replaced = false;
+	for (let i = 0; i < lines.length; i += 1) {
+		if (lines[i].startsWith(`${key}=`)) {
+			lines[i] = `${key}=${literal}`;
+			replaced = true;
+			break;
+		}
+	}
+	if (!replaced) {
+		// Keep the trailing newline tidy when appending a brand-new key.
+		while (lines.length && lines[lines.length - 1] === '') lines.pop();
+		lines.push(`${key}=${literal}`, '');
+	}
+
+	const b64 = btoa(unescape(encodeURIComponent(lines.join('\n'))));
+	const write = await exec(`echo '${b64}' | base64 -d > '${CONFIG_PATH}'`);
+	return { ok: write.errno === 0, error: write.stderr };
+}
+
+export async function getModuleProp() {
+	const { stdout, errno } = await exec(`cat '${MOD_DIR}/module.prop' 2>/dev/null`);
+	const prop = {};
+	if (errno === 0) {
+		for (const line of stdout.split('\n')) {
+			const idx = line.indexOf('=');
+			if (idx > 0) prop[line.slice(0, idx)] = line.slice(idx + 1);
+		}
+	}
+	return prop;
+}
+
+/** Raw contents of one of the editable path-list files under
+ * PERSISTENT_DIR (sus_path.txt, sus_mount.txt, ...), for the Advanced
+ * settings editors. */
+export async function getListFile(filename) {
+	const { stdout, errno } = await exec(`cat '${PERSISTENT_DIR}/${filename}' 2>/dev/null`);
+	return errno === 0 ? stdout : '';
+}
+
+export async function setListFile(filename, contents) {
+	// base64 round-trip avoids any quoting hazard from the file's own
+	// content (paths, comments, whatever the user pastes in).
+	const b64 = btoa(unescape(encodeURIComponent(contents)));
+	const { errno, stderr } = await exec(`echo '${b64}' | base64 -d > '${PERSISTENT_DIR}/${filename}'`);
+	return { ok: errno === 0, error: stderr };
+}
+
+// ---------------------------------------------------------------------
+// Prop presets
+//
+// Each preset is a *.prop file under PROPS_DIR with a small comment
+// header (name / description / enabled) followed by "<mode> <prop>
+// <value>" rules. service.sh applies them in filename order at boot.
+// ---------------------------------------------------------------------
+
+/** Only ever build preset paths from a sanitised filename - the name for
+ * a new preset is free text from the user, and it lands in a shell
+ * command. Anything outside this set is rejected rather than escaped. */
+export function sanitisePresetFilename(name) {
+	const base = String(name).trim().replace(/\.prop$/i, '');
+	const cleaned = base.replace(/[^A-Za-z0-9._-]/g, '-').replace(/^-+|-+$/g, '');
+	return cleaned ? `${cleaned}.prop` : '';
+}
+
+function isSafePresetFilename(file) {
+	return /^[A-Za-z0-9._-]+\.prop$/.test(file) && !file.includes('..');
+}
+
+export async function listPropPresets() {
+	const cmd = `for f in '${PROPS_DIR}'/*.prop; do
+	[ -f "$f" ] || continue
+	b=$(basename "$f")
+	n=$(sed -n 's/^#[[:space:]]*name:[[:space:]]*//p' "$f" | head -n1)
+	d=$(sed -n 's/^#[[:space:]]*description:[[:space:]]*//p' "$f" | head -n1)
+	e=$(sed -n 's/^#[[:space:]]*enabled:[[:space:]]*\\([0-9][0-9]*\\).*/\\1/p' "$f" | head -n1)
+	s=$(sed -n 's/^#[[:space:]]*stage:[[:space:]]*\\([A-Za-z-]*\\).*/\\1/p' "$f" | head -n1)
+	lo=$(sed -n 's/^#[[:space:]]*min_sdk:[[:space:]]*\\([0-9][0-9]*\\).*/\\1/p' "$f" | head -n1)
+	hi=$(sed -n 's/^#[[:space:]]*max_sdk:[[:space:]]*\\([0-9][0-9]*\\).*/\\1/p' "$f" | head -n1)
+	c=$(grep -cE '^[[:space:]]*[a-z_]+[[:space:]]+[^[:space:]]+' "$f")
+	printf '%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\n' "$b" "$n" "$d" "$e" "$c" "$s" "$lo" "$hi"
+done`;
+	const { stdout, errno } = await exec(cmd);
+	if (errno !== 0) return [];
+	return stdout
+		.split('\n')
+		.map((l) => l.split('\t'))
+		.filter((p) => p.length >= 5 && p[0])
+		.map(([file, name, description, enabled, count, stage, minSdk, maxSdk]) => ({
+			file,
+			name: name || file.replace(/\.prop$/, ''),
+			description: description || '',
+			// A preset with no enabled: header counts as enabled, matching
+			// what nyx_apply_prop_presets does at boot.
+			enabled: enabled === '' ? true : enabled === '1',
+			ruleCount: Number(count) || 0,
+			// Same default as the runner: no stage header means service.
+			stage: stage || 'service',
+			minSdk: minSdk || '',
+			maxSdk: maxSdk || '',
+		}));
+}
+
+export async function getPropPreset(file) {
+	if (!isSafePresetFilename(file)) return '';
+	const { stdout, errno } = await exec(`cat '${PROPS_DIR}/${file}' 2>/dev/null`);
+	return errno === 0 ? stdout : '';
+}
+
+export async function setPropPreset(file, contents) {
+	if (!isSafePresetFilename(file)) return { ok: false, error: 'invalid preset filename' };
+	const b64 = btoa(unescape(encodeURIComponent(contents)));
+	const { errno, stderr } = await exec(
+		`mkdir -p '${PROPS_DIR}' && echo '${b64}' | base64 -d > '${PROPS_DIR}/${file}'`
+	);
+	return { ok: errno === 0, error: stderr };
+}
+
+/** Rewrites just the '# enabled:' header line, leaving the rest of the
+ * preset - including the user's own edits and comments - untouched. */
+export async function setPropPresetEnabled(file, enabled) {
+	if (!isSafePresetFilename(file)) return { ok: false, error: 'invalid preset filename' };
+	const val = enabled ? '1' : '0';
+	const target = `${PROPS_DIR}/${file}`;
+	const cmd = `awk -v en='${val}' '
+BEGIN { done = 0 }
+done == 0 && /^#[ \\t]*enabled:/ { print "# enabled: " en; done = 1; next }
+{ print }
+END { if (done == 0) print "# enabled: " en }
+' '${target}' > '${target}.nyxtmp' && mv '${target}.nyxtmp' '${target}'`;
+	const { errno, stderr } = await exec(cmd);
+	return { ok: errno === 0, error: stderr };
+}
+
+export async function deletePropPreset(file) {
+	if (!isSafePresetFilename(file)) return { ok: false, error: 'invalid preset filename' };
+	const { errno, stderr } = await exec(`rm -f '${PROPS_DIR}/${file}'`);
+	return { ok: errno === 0, error: stderr };
+}
+
+/**
+ * Active (non-comment, non-blank) entry count for each path list.
+ * @param {string[]} files
+ * @returns {Promise<Record<string, number>>}
+ */
+export async function listPathFiles(files) {
+	const safe = files.filter((f) => /^[A-Za-z0-9._-]+$/.test(f));
+	if (!safe.length) return {};
+	const cmd = safe
+		.map((f) => `printf '%s\\t%s\\n' '${f}' "$(grep -cE '^[[:space:]]*[^#[:space:]]' '${PERSISTENT_DIR}/${f}' 2>/dev/null || echo 0)"`)
+		.join('\n');
+	const { stdout, errno } = await exec(cmd);
+	const out = {};
+	if (errno !== 0) return out;
+	for (const line of stdout.split('\n')) {
+		const [file, count] = line.split('\t');
+		if (file) out[file.trim()] = Number(count) || 0;
+	}
+	return out;
+}
+
+/**
+ * Device identity for the home "Device" section. Values are read live via
+ * getprop, so they reflect the CURRENT (spoofed, if any) values a detector
+ * would see. Kernel is read two ways - /proc/version and uname -r - because
+ * spoof_uname makes them differ, which is itself a useful signal.
+ */
+export async function getDeviceInfo() {
+	const [rel, sdk, model, mfr, procK, unameK] = await Promise.all([
+		exec('getprop ro.build.version.release 2>/dev/null'),
+		exec('getprop ro.build.version.sdk 2>/dev/null'),
+		exec('getprop ro.product.model 2>/dev/null'),
+		exec('getprop ro.product.manufacturer 2>/dev/null'),
+		exec("cat /proc/version 2>/dev/null | awk '{print $3}'"),
+		exec('uname -r 2>/dev/null'),
+	]);
+	const t = (r) => (r.stdout || '').trim();
+	const proc = t(procK);
+	const un = t(unameK);
+	return {
+		model: [t(mfr), t(model)].filter(Boolean).join(' ') || null,
+		android: t(rel) ? `${t(rel)}${t(sdk) ? ` (SDK ${t(sdk)})` : ''}` : null,
+		procKernel: proc || null,
+		unameKernel: un || null,
+		unameSpoofed: !!(proc && un && proc !== un),
+	};
+}
+
+/**
+ * Live "is it working" checks for the home Verification section. Each item is
+ * { key, value, ok } where ok===true is a pass, false a warning, and null is
+ * informational (no verdict). Everything is a read-only getprop / test, so it
+ * reflects the device's current reported state rather than what was toggled.
+ *
+ * The first item is a self-test of SuSFS's own path hiding: SuSFS redirects a
+ * hidden path to a canary name (..5.u.S) that must NOT be reachable - if it is
+ * reachable, sus_path hiding isn't taking effect. (Probe borrowed from BRENE.)
+ */
+export async function getVerification() {
+	const [canary, vbs, locked, verity, selinux, spl] = await Promise.all([
+		exec('[ -e /storage/emulated/0/..5.u.S ] && echo exposed || echo hidden'),
+		exec('getprop ro.boot.verifiedbootstate 2>/dev/null'),
+		exec('getprop ro.boot.flash.locked 2>/dev/null'),
+		exec('getprop ro.boot.veritymode 2>/dev/null'),
+		exec('getenforce 2>/dev/null'),
+		exec('getprop ro.build.version.security_patch 2>/dev/null'),
+	]);
+	const t = (r) => (r.stdout || '').trim();
+	const c = t(canary);
+	const l = t(locked);
+	const se = t(selinux);
+	const ve = t(verity);
+	const v = t(vbs);
+	return [
+		{ key: 'path_hide', ok: c === 'hidden', value: c === 'hidden' ? 'ok' : 'bad' },
+		{ key: 'vbs', ok: v === 'green', value: v || '—' },
+		{ key: 'bootloader', ok: l === '1', value: l === '1' ? 'locked' : (l === '' ? '—' : 'unlocked') },
+		{ key: 'verity', ok: ve === 'enforcing', value: ve || '—' },
+		{ key: 'selinux', ok: /enforc/i.test(se), value: se || '—' },
+		{ key: 'spl', ok: null, value: t(spl) || '—' },
+	];
+}

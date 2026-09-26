@@ -1,0 +1,10 @@
+# Paths to hide via sus_path_loop, applied at boot-completed.
+# Requires susfs v1.5.9+ (or v2.0.0+). Same format as sus_path.txt.
+# Use this instead of sus_path for paths that get recreated or modified
+# frequently. Lines starting with # are ignored.
+#
+# format: <path> [max seconds to wait for it to exist]
+#
+# example:
+# /storage/emulated/0/TWRP
+# /data/local/tmp 15

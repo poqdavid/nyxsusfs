@@ -1,0 +1,8 @@
+# Paths to hide from process memory maps (/proc/<pid>/maps) via sus_map,
+# applied at boot-completed. Requires a kernel with
+# CONFIG_KSU_SUSFS_SUS_MAP. Lines starting with # are ignored.
+#
+# example:
+# /system/fonts/Roboto-Regular.ttf
+# /vendor/lib64/libsuspicious.so
+# /data/adb/modules/my_module/zygisk/arm64-v8a.so
