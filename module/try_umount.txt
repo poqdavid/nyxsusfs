@@ -1,0 +1,12 @@
+# Mounts to try_umount, applied at post-mount (and at boot-completed via
+# ksud's kernel umount on susfs v2.0.0+ kernels built without
+# CONFIG_KSU_SUSFS_TRY_UMOUNT).
+# One mount point per line.
+#
+# Any line containing a # is ignored entirely, so inline/trailing
+# comments are not supported here - put comments on their own line.
+#
+# example:
+# /system
+# /system_ext
+# /debug_ramdisk

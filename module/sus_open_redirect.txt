@@ -1,0 +1,21 @@
+# Paths to transparently redirect when opened, via open_redirect.
+# Requires a kernel with CONFIG_KSU_SUSFS_OPEN_REDIRECT.
+# Lines starting with # are ignored.
+#
+# format: <original_path> <redirected_path> <stage> [uid_scheme]
+#
+#   stage       0 = apply at boot-completed
+#               1 = apply at service (earlier; use if the path is read
+#                   before boot completes)
+#
+#   uid_scheme  optional, susfs v2.1.0+ only. Controls which UIDs see the
+#               redirect. Defaults to 2 when omitted. Run
+#               'ksu_susfs add_open_redirect' in a root shell for the
+#               full list of schemes on your kernel.
+#
+# Both paths must already exist before they can be added, and you are
+# responsible for the SELinux context of the redirected path.
+#
+# example:
+# /system/etc/hosts /data/adb/nyxsusfs/my_hosts 0
+# /system/bin/service /data/adb/nyxsusfs/service_redirected 1 3

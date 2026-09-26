@@ -1,0 +1,11 @@
+# Mounts to hide via sus_mount, applied at post-mount.
+# One mount point per line.
+#
+# Any line containing a # is ignored entirely, so inline/trailing
+# comments are not supported here - put comments on their own line.
+#
+# example:
+# /system
+# /system_ext
+# /data/adb/modules
+# /debug_ramdisk
