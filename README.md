@@ -14,7 +14,7 @@ A modern **SuSFS** companion module for **KernelSU / KernelSU-Next** with a **Ma
 - 🔁 **Config-compatible**: reads the same configuration as `ksu_module_susfs`, so existing setups carry over
 - 📂 **Separate config directory**: keeps its own persistent state under `/data/adb/nyxsusfs`, independent of `ksu_module_susfs`
 - 🧰 **Bundled tooling**: ships the `ksu_susfs` / `sus_su` helpers
-- 🩹 **Extended coverage**: covers extra paths, reimplemented from the underlying path data and approach only — no third-party shell code
+- 🩹 **Extended coverage**: extra targeted and bulk path hiding (injected module files, root-shell PTYs, recovery leftovers, addon.d, `/data/local/tmp` and more), reimplementing ideas from BRENE
 
 ---
 
@@ -89,9 +89,10 @@ Flashing kernel-level modules always carries a risk of boot loops or an unbootab
 | **SUSFS**              | simonpunk         | [GitLab](https://gitlab.com/simonpunk/susfs4ksu)                         |
 | **ksu_module_susfs**   | sidex15           | [GitHub](https://github.com/sidex15/ksu_module_susfs)                    |
 | **BRENE**              | rrr333nnn333      | [GitHub](https://github.com/rrr333nnn333/BRENE)                          |
+| **ReZygisk**           | PerformanC        | [GitHub](https://github.com/PerformanC/ReZygisk)                         |
 | **Magisk**             | topjohnwu         | [GitHub](https://github.com/topjohnwu/Magisk)                            |
 
-*Path coverage takes inspiration from the data and approach of the projects above; the implementation is original.*
+*NyxSUSFS grew out of ksu_module_susfs, and several hiding features reimplement ideas from BRENE. See [NOTICE.md](NOTICE.md) for what comes from where.*
 
 *If you have contributed and are not listed here, please remind me!* 🙏
 
@@ -99,7 +100,7 @@ Flashing kernel-level modules always carries a risk of boot loops or an unbootab
 
 ## 📄 License
 
-NyxSUSFS is released under the [GNU General Public License v3.0](LICENSE). See the `LICENSE` file for details.
+NyxSUSFS is released under the [GNU Affero General Public License v3.0](LICENSE) (`AGPL-3.0-only`), the same license as ksu_module_susfs, which it is derived from. [NOTICE.md](NOTICE.md) lists the projects it builds on and the licenses of the bundled binaries.
 
 ---
 

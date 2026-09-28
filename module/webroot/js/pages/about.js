@@ -1,4 +1,4 @@
-import { getModuleProp, getSusfsInfo, getConfig, setConfigValue, PERSISTENT_DIR } from '../susfs-data.js';
+import { getModuleProp, getSusfsInfo, getConfig, setConfigValue, PERSISTENT_DIR, MOD_DIR } from '../susfs-data.js';
 import { applyTheme, applyMonet, monetAvailable } from '../theme.js';
 import { applyFullscreen, fullScreenAvailable } from '../fullscreen.js';
 import { t } from '../i18n.js';
@@ -57,13 +57,20 @@ export function renderAboutShell(root) {
 
 		<h2 class="section-title">${t('about_credits_title', 'Credits')}</h2>
 		<div class="card">
-			<p style="margin:0 0 8px;">${t('about_credits_intro', "NyxSUSFS is a from-scratch WebUI and script layer built to sit on top of <strong>ksu_module_susfs</strong>'s config layout, so it stays a drop-in for anyone already using it.")}</p>
+			<p style="margin:0 0 8px;">${t('about_credits_intro', "NyxSUSFS pairs a WebUI written from scratch with boot scripts that started from <strong>ksu_module_susfs</strong>, so it stays a drop-in for anyone already using that module.")}</p>
 			<p style="margin:0 0 8px;">${t('about_credits_susfs', '<strong>SuSFS</strong> by <strong>simonpunk</strong> is the kernel magic that makes all of this possible. None of this exists without it.')}</p>
 			<p style="margin:0 0 8px;">${t('about_credits_sidex15', "<strong>ksu_module_susfs</strong> by <strong>sidex15</strong> is the original module Nyx grew out of. Nyx keeps its config layout so it stays a friendly drop-in for anyone already using it, and ships sidex15's <code>ksu_susfs</code> binaries. Huge thanks for the foundation.")}</p>
 			<p style="margin:0 0 8px;">${t('about_credits_brene', "A number of Nyx's mount-hiding ideas were sparked by studying <strong>BRENE</strong> by <strong>rrr333nnn333</strong>. The ideas were reimplemented in Nyx's own way, but the inspiration deserves a shout-out.")}</p>
 			<p style="margin:0 0 8px;">${t('about_credits_rezygisk', 'The Zygisk-aware unmounting and mount-source detection were guided by the <strong>ReZygisk</strong> project (<strong>PerformanC</strong>), thanks for the pointers on doing it right.')}</p>
 			<p style="margin:0 0 8px;">${t('about_credits_poqdavid', 'Everything else, the WebUI, the targeted hiding, the glue, I built myself, with love for the community. Issues and translations welcome. Prop spoofing now lives in its own module, NyxProps.')}</p>
 			<p style="margin:0; color: var(--md-on-surface-variant); font-size: 13px;">${t('about_credits_config', 'Config &amp; logs:')} <code>${PERSISTENT_DIR}</code></p>
+		</div>
+
+		<h2 class="section-title">${t('about_license_title', 'License')}</h2>
+		<div class="card">
+			<p style="margin:0 0 8px;">${t('about_license_copyright', 'Copyright © 2026 poqdavid')}</p>
+			<p style="margin:0 0 8px;">${t('about_license_body', 'NyxSUSFS is free software under the GNU Affero General Public License v3.0 (AGPL-3.0-only). You may redistribute and modify it under that license. It comes with ABSOLUTELY NO WARRANTY.')}</p>
+			<p style="margin:0; color: var(--md-on-surface-variant); font-size: 13px;">${t('about_license_where', 'License text and notices:')} <code>${MOD_DIR}/LICENSE</code>, <code>NOTICE.md</code><br>${t('about_license_source', 'Source code:')} <code>github.com/poqdavid/nyxsusfs</code></p>
 		</div>
 	`;
 

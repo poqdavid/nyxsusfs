@@ -1,5 +1,13 @@
 # Changelog
 
+## [v1.1.1] - 2026-09-28
+
+### ⚖️ License
+
+* **Relicensed to AGPL-3.0-only.** NyxSUSFS grew out of ksu_module_susfs, which is AGPL-3.0, so it now carries the same license. Earlier releases were labelled GPL-3.0.
+* **Notices:** added `NOTICE.md`, which credits the projects NyxSUSFS builds on and gives the licenses and source locations of the bundled binaries. `LICENSE` and `NOTICE.md` now ship inside the module zip.
+* **About screen:** now shows the copyright, the license, the no-warranty notice and where to find the source. The credits no longer describe the boot scripts as written from scratch.
+
 ## [v1.1.0] - 2026-09-28
 
 ### ✂️ Split

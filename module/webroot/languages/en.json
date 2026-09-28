@@ -86,7 +86,7 @@
   "set_bin_update_now_action": "Check",
   "set_bin_update_now_desc": "Compares hashes against sidex15/susfs4ksu-binaries. Works whether or not the check on open is enabled.",
   "about_credits_title": "Credits",
-  "about_credits_intro": "NyxSUSFS is a from-scratch WebUI and script layer built to sit on top of <strong>ksu_module_susfs</strong>'s config layout, so it stays a drop-in for anyone already using it.",
+  "about_credits_intro": "NyxSUSFS pairs a WebUI written from scratch with boot scripts that started from <strong>ksu_module_susfs</strong>, so it stays a drop-in for anyone already using that module.",
   "about_credits_susfs": "<strong>SuSFS</strong> by <strong>simonpunk</strong> is the kernel magic that makes all of this possible. None of this exists without it.",
   "about_credits_sidex15": "<strong>ksu_module_susfs</strong> by <strong>sidex15</strong> is the original module Nyx grew out of. Nyx keeps its config layout so it stays a friendly drop-in for anyone already using it, and ships sidex15's <code>ksu_susfs</code> binaries. Huge thanks for the foundation.",
   "about_credits_brene": "A number of Nyx's mount-hiding ideas were sparked by studying <strong>BRENE</strong> by <strong>rrr333nnn333</strong>. The ideas were reimplemented in Nyx's own way, but the inspiration deserves a shout-out.",
@@ -109,5 +109,10 @@
   "home_device_uname_spoofed": "uname spoofed",
   "home_device_model": "Model",
   "home_device_android": "Android",
-  "home_device_kernel": "Kernel"
+  "home_device_kernel": "Kernel",
+  "about_license_title": "License",
+  "about_license_copyright": "Copyright © 2026 poqdavid",
+  "about_license_body": "NyxSUSFS is free software under the GNU Affero General Public License v3.0 (AGPL-3.0-only). You may redistribute and modify it under that license. It comes with ABSOLUTELY NO WARRANTY.",
+  "about_license_where": "License text and notices:",
+  "about_license_source": "Source code:"
 }
