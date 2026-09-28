@@ -1,5 +1,5 @@
 import { getConfig, setConfigValue } from '../susfs-data.js';
-import { toast } from '../ksu-bridge.js';
+import { toast, nextPaint } from '../ksu-bridge.js';
 import { checkBinaryUpdate, applyBinaryUpdate, describeBinaryStatus } from '../bin-update.js';
 import { confirmDialog } from '../dialog.js';
 import { t, getAvailableLanguages, getCurrentLanguage, setLanguage } from '../i18n.js';
@@ -129,6 +129,9 @@ function renderLanguageSelector(cardEl) {
 			renderSettingsShell(pageRoot);
 			refreshSettings(pageRoot);
 		}
+		// Pages keep what they rendered across tab switches now, so tell the
+		// app to re-read the others in the new language on their next visit.
+		document.dispatchEvent(new CustomEvent('nyx:language-changed'));
 	});
 }
 
@@ -199,6 +202,8 @@ export function renderSettingsShell(root) {
 		const el = e.target.closest('[data-key]');
 		if (!el) return;
 		const value = el.dataset.type === 'bool' ? (el.checked ? '1' : '0') : el.value;
+		// Show the flipped switch / picked option first; the write holds the page.
+		await nextPaint();
 		const { ok } = await setConfigValue(el.dataset.key, value);
 		toast(ok ? 'Saved — some settings need a reboot to apply' : 'Failed to save setting');
 	});
@@ -207,6 +212,11 @@ export function renderSettingsShell(root) {
 		const btn = e.target.closest('[data-action="bin_update_now"]');
 		if (btn) runManualBinCheck(btn);
 	});
+}
+
+/** Put the button into its spinning "busy" state with a label. */
+function setBtnBusy(btn, label) {
+	btn.innerHTML = `<span class="btn__spinner" aria-hidden="true"></span>${label}`;
 }
 
 /**
@@ -218,25 +228,6 @@ export function renderSettingsShell(root) {
  * request, so pressing this while an on-open check is still running joins
  * that one instead of starting a second.
  */
-/**
- * Resolves after the browser has committed a frame, so a spinner set just
- * before is actually on screen - and its transform animation handed to the
- * compositor - before we call into ksu.exec. On managers whose exec blocks
- * the WebView's main thread for the check's network round trips, this is the
- * difference between a dead freeze and a spinner that keeps turning; on
- * async managers it just guarantees the feedback shows immediately.
- */
-function nextPaint() {
-	return new Promise((resolve) => {
-		requestAnimationFrame(() => requestAnimationFrame(() => resolve()));
-	});
-}
-
-/** Put the button into its spinning "busy" state with a label. */
-function setBtnBusy(btn, label) {
-	btn.innerHTML = `<span class="btn__spinner" aria-hidden="true"></span>${label}`;
-}
-
 async function runManualBinCheck(btn) {
 	const original = btn.innerHTML;
 	btn.disabled = true;
@@ -275,7 +266,11 @@ async function runManualBinCheck(btn) {
 }
 
 export async function refreshSettings(root) {
-	const config = await getConfig();
+	applySettingsConfig(root, await getConfig());
+}
+
+/** Set every control from a parsed config.sh (also used at startup). */
+export function applySettingsConfig(root, config) {
 	root.querySelectorAll('[data-key][data-type]').forEach((el) => {
 		const value = config[el.dataset.key];
 		if (el.dataset.type === 'bool') {

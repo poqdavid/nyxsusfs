@@ -1,5 +1,5 @@
 import { getListFile, setListFile, listPathFiles } from '../susfs-data.js';
-import { toast } from '../ksu-bridge.js';
+import { toast, nextPaint } from '../ksu-bridge.js';
 
 // Order matches how the boot scripts consume them, most-used first.
 // `inlineComments: false` marks the two files filtered with `grep -v "#"`,
@@ -49,6 +49,9 @@ const PATH_FILES = [
 	},
 ];
 
+/** The list files the page shows counts for, for the startup read. */
+export const PATH_FILE_NAMES = PATH_FILES.map((f) => f.file);
+
 export function renderPathsShell(root) {
 	root.innerHTML = `
 		<p class="setting-row__desc" style="margin:4px 4px 16px;">
@@ -96,6 +99,8 @@ export function renderPathsShell(root) {
 			head.setAttribute('aria-expanded', String(opening));
 			card.querySelector('.path-card__chevron').textContent = opening ? '▾' : '▸';
 			if (opening && !card.dataset.loaded) {
+				// Let the card open on screen before the read holds the page.
+				await nextPaint();
 				await loadInto(card, file);
 			}
 			return;
@@ -158,7 +163,11 @@ function checkWarning(card, file) {
 }
 
 export async function refreshPaths(root) {
-	const counts = await listPathFiles(PATH_FILES.map((f) => f.file));
+	renderPathCounts(root, await listPathFiles(PATH_FILE_NAMES));
+}
+
+/** Fill in the per-file counts from a listPathFiles() result. */
+export function renderPathCounts(root, counts) {
 	root.querySelectorAll('.path-card').forEach((card) => {
 		const n = counts[card.dataset.file];
 		const el = card.querySelector('[data-role="count"]');

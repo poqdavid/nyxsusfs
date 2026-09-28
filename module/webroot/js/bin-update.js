@@ -9,8 +9,12 @@
 // the network, it compares against a third-party binary host, and the
 // result is never acted on without being asked, so opting in is the
 // right way round.
+//
+// Both stages go through execAsync (the manager's spawn), not exec: they
+// wait on the network for seconds, and a blocking exec would freeze the
+// whole WebUI for that long.
 
-import { exec } from './ksu-bridge.js';
+import { execAsync } from './ksu-bridge.js';
 import { MOD_DIR } from './susfs-data.js';
 
 const SCRIPT = `${MOD_DIR}/bin-update.sh`;
@@ -32,7 +36,7 @@ function parseBlock(stdout) {
 }
 
 async function runStage(stage) {
-	const { errno, stdout } = await exec(`sh '${SCRIPT}' ${stage} 2>/dev/null`);
+	const { errno, stdout } = await execAsync(`sh '${SCRIPT}' ${stage} 2>/dev/null`);
 	// check/apply exit 0 on purpose so the block always survives; a
 	// non-zero errno with no output means the script could not be run at
 	// all (missing file, no shell), which is worth reporting differently

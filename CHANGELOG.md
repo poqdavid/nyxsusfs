@@ -1,5 +1,23 @@
 # Changelog
 
+## [v1.2.0] - 2026-09-28
+
+### ⚡ WebUI performance
+
+The manager's `ksu.exec` holds the WebUI's main thread while it opens a fresh root shell for each command, so every shell read froze the page. Opening the WebUI took 21 of them, and every switch back to Home took 19.
+
+* **One read on open.** Everything the four pages show, plus the night-mode check for the "System" theme, is now read through a single root shell. It used to take 21.
+* **Instant tab switches.** Pages keep what they show instead of re-reading on every visit. The refresh button in the top bar re-reads the page you're on, and its icon spins while it does.
+* **Stat cards** open their list straight away, from the same read the card numbers came from.
+* **Paint first.** Switches, pickers, path editors and the refresh button update on screen before their shell call runs.
+* **Binary update check** (on open and "Check now") now runs in the background through the manager's `spawn`, so the WebUI stays usable while it waits on the network. Managers without `spawn` use the previous blocking call.
+* **Faster loading:** the WebUI's scripts load together instead of one wave of imports at a time, and the language files load in parallel.
+* **Material You:** opening the WebUI no longer waits up to 1.2 s for a palette on managers that don't serve one.
+
+### 🐛 Fixes
+
+* **Settings could lose changes.** Toggling several settings in quick succession could write only the last one to `config.sh`, even though every switch showed as changed. Saves now happen one after another.
+
 ## [v1.1.2] - 2026-09-28
 
 ### 🐛 Fixes

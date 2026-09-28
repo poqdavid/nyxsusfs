@@ -297,8 +297,11 @@ textarea.list-editor {
 	animation: nyx-spin .7s linear infinite;
 }
 @keyframes nyx-spin { to { transform: rotate(360deg); } }
-/* Keep the spinner (it conveys progress) but ease it for reduced-motion. */
-@media (prefers-reduced-motion: reduce) { .btn__spinner { animation-duration: 1.5s; } }
+/* The top-bar refresh icon turns (its own way round) while the page is
+   re-read - transform only, for the same compositor reason as above. */
+#refresh-btn.is-busy svg { animation: nyx-spin .8s linear infinite reverse; }
+/* Keep the spinners (they convey progress) but ease them for reduced-motion. */
+@media (prefers-reduced-motion: reduce) { .btn__spinner, #refresh-btn.is-busy svg { animation-duration: 1.5s; } }
 
 /* ---------- Chips (feature list on About) ---------- */
 .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }

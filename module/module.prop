@@ -1,7 +1,7 @@
 id=nyxsusfs
 name=NyxSUSFS
-version=v1.1.2
-versionCode=112
+version=v1.2.0
+versionCode=120
 author=poqdavid
 description=[Status: Waiting for reboot] A modern SuSFS companion for KernelSU/KernelSU-Next with a Material You WebUI. Config-compatible with ksu_module_susfs.
 updateJson=https://raw.githubusercontent.com/poqdavid/nyxsusfs/main/update.json

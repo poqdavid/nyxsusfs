@@ -1,6 +1,7 @@
-import { getModuleProp, getSusfsInfo, getConfig, setConfigValue, PERSISTENT_DIR, MOD_DIR } from '../susfs-data.js';
+import { getAboutData, setConfigValue, PERSISTENT_DIR, MOD_DIR } from '../susfs-data.js';
 import { applyTheme, applyMonet, monetAvailable } from '../theme.js';
 import { applyFullscreen, fullScreenAvailable } from '../fullscreen.js';
+import { nextPaint } from '../ksu-bridge.js';
 import { t } from '../i18n.js';
 
 export function renderAboutShell(root) {
@@ -76,6 +77,7 @@ export function renderAboutShell(root) {
 
 	root.querySelector('[data-role="monet"]').addEventListener('change', async (e) => {
 		const wanted = e.target.checked;
+		await nextPaint();
 		await setConfigValue('webui_monet', wanted ? '1' : '0');
 		const { enabled, available } = await applyMonet(wanted);
 		// If the manager never supplied a palette, don't leave the switch
@@ -90,11 +92,13 @@ export function renderAboutShell(root) {
 		// write only decides what happens next time the WebUI opens.
 		const applied = applyFullscreen(wanted);
 		e.target.checked = applied;
+		await nextPaint();
 		await setConfigValue('webui_fullscreen', applied ? '1' : '0');
 	});
 
 	root.querySelector('[data-role="theme"]').addEventListener('change', async (e) => {
 		const mode = e.target.value;
+		await nextPaint();
 		await setConfigValue('webui_theme', mode);
 		const effective = await applyTheme(mode);
 		updateThemeHint(root, mode, effective);
@@ -102,8 +106,11 @@ export function renderAboutShell(root) {
 }
 
 export async function refreshAbout(root) {
-	const [prop, info, config] = await Promise.all([getModuleProp(), getSusfsInfo(), getConfig()]);
+	renderAbout(root, await getAboutData());
+}
 
+/** Fill the page from a getAboutData() result (also used at startup). */
+export function renderAbout(root, { prop, info, config }) {
 	root.querySelector('[data-role="name"]').textContent = prop.name ?? 'NyxSUSFS';
 	root.querySelector('[data-role="version"]').textContent = [prop.version, prop.author ? `by ${prop.author}` : null].filter(Boolean).join(' · ');
 
@@ -121,11 +128,7 @@ export async function refreshAbout(root) {
 	// tell whether it read the device setting correctly.
 	updateThemeHint(root, mode, document.documentElement.dataset.theme);
 
-	const monetSwitch = root.querySelector('[data-role="monet"]');
-	const available = monetAvailable();
-	monetSwitch.checked = document.documentElement.dataset.monet === 'on';
-	monetSwitch.disabled = !available;
-	updateMonetHint(root, available);
+	syncMonetSwitch(root);
 
 	// Read back off the document rather than the config, so the switch
 	// shows what is actually in effect - the two differ when the host has
@@ -137,6 +140,16 @@ export async function refreshAbout(root) {
 	root.querySelector('[data-role="fullscreen-hint"]').textContent = fsAvailable
 		? 'Hide the status and navigation bars'
 		: "Your manager doesn't support fullscreen";
+}
+
+/** Show the Material You switch as it is in effect right now. Also called
+ * when a palette turns up after the page was rendered. */
+export function syncMonetSwitch(root) {
+	const monetSwitch = root.querySelector('[data-role="monet"]');
+	const available = monetAvailable();
+	monetSwitch.checked = document.documentElement.dataset.monet === 'on';
+	monetSwitch.disabled = !available;
+	updateMonetHint(root, available);
 }
 
 function updateMonetHint(root, available) {

@@ -1,7 +1,13 @@
 import { icons } from '../icons.js';
-import { getSusfsInfo, getStats, getCategoryDetail, getDeviceInfo, getVerification } from '../susfs-data.js';
+import { getHomeData, getCategoryDetail } from '../susfs-data.js';
 import { openSheetLoading, openSheetWithGroups } from '../sheet.js';
+import { nextPaint } from '../ksu-bridge.js';
 import { t } from '../i18n.js';
+
+// Drill-down rows behind the stat cards, from the same read the card
+// numbers came from - so tapping a card opens instantly, and its list is
+// by construction the rows that were counted.
+let lastDetails = null;
 
 /**
  * Show (or clear, with null) a notice above the stats. Lives outside
@@ -95,16 +101,25 @@ export function renderHomeShell(root) {
 		const btn = e.target.closest('.stat-card');
 		if (!btn) return;
 		const category = btn.dataset.category;
+		const cached = lastDetails && lastDetails[category];
+		if (cached) {
+			openSheetWithGroups(STAT_LABELS[category], cached);
+			return;
+		}
 		openSheetLoading(STAT_LABELS[category]);
+		await nextPaint();
 		const groups = await getCategoryDetail(category);
 		openSheetWithGroups(STAT_LABELS[category], groups);
 	});
 }
 
 export async function refreshHome(root) {
-	const [info, stats, verify, device] = await Promise.all([
-		getSusfsInfo(), getStats(), getVerification(), getDeviceInfo(),
-	]);
+	renderHome(root, await getHomeData());
+}
+
+/** Fill the page from a getHomeData() result (also used at startup). */
+export function renderHome(root, { info, stats, verify, device, details }) {
+	lastDetails = details;
 
 	const statusEl = root.querySelector('[data-role="status"]');
 	if (info.active) {
