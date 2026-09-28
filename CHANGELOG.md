@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.1.2] - 2026-09-28
+
+### 🐛 Fixes
+
+* **WebUI double padding with fullscreen off.** On KernelSU, SukiSU-Ultra and ReSukiSU, the WebUI opened with an extra gap above the top bar and below the navigation bar. It only went away after toggling fullscreen on and off. These managers turn edge-to-edge off whenever fullscreen is turned off, so the manager and the WebUI both padded for the system bars. The WebUI now turns edge-to-edge back on and handles the bars itself, as it already did on KernelSU-Next.
+
 ## [v1.1.1] - 2026-09-28
 
 ### ⚖️ License

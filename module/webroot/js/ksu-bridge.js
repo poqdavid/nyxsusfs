@@ -73,6 +73,21 @@ export function fullScreenAvailable() {
 	return hasBridge() && typeof window.ksu.fullScreen === 'function';
 }
 
+/** Switch the manager's edge-to-edge mode back on, where the host has the
+ * call (KernelSU, SukiSU-Ultra, ReSukiSU; not KernelSU-Next). The argument
+ * is passed explicitly: the Kotlin default of `true` doesn't cross the JS
+ * bridge, which matches methods by arity. */
+export function enableEdgeToEdge() {
+	if (!hasBridge() || typeof window.ksu.enableEdgeToEdge !== 'function') return false;
+	try {
+		window.ksu.enableEdgeToEdge(true);
+		return true;
+	} catch (err) {
+		console.warn('[nyx] enableEdgeToEdge failed:', err);
+		return false;
+	}
+}
+
 /** Returns module.prop as a parsed object, read directly off disk so it's
  * always current even before a reboot re-renders the manager's cache. */
 export async function moduleInfo(modDir) {
