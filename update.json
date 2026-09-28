@@ -1,6 +1,6 @@
 {
-  "version": "v1.0.1",
-  "versionCode": 101,
-  "zipUrl": "https://github.com/poqdavid/nyxsusfs/releases/download/v1.0.1/nyxsusfs-v1.0.1.zip",
+  "version": "v1.1.0",
+  "versionCode": 110,
+  "zipUrl": "https://github.com/poqdavid/nyxsusfs/releases/download/v1.1.0/nyxsusfs-v1.1.0.zip",
   "changelog": "https://raw.githubusercontent.com/poqdavid/nyxsusfs/main/CHANGELOG.md"
 }
