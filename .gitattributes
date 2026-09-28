@@ -1,1 +1,13 @@
-* text eol=lf
+# Normalize line endings for text files only; let git auto-detect binaries.
+* text=auto eol=lf
+
+# Bundled executables and other binaries must never be touched.
+module/bin/** binary
+module/tools/** binary
+*.zip binary
+*.png binary
+*.jpg binary
+*.webp binary
+*.ttf binary
+*.woff binary
+*.woff2 binary
