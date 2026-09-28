@@ -42,19 +42,6 @@ hide_lineage_strings=0
 force_hide_lsposed=0
 [ -f $PERSISTENT_DIR/config.sh ] && . $PERSISTENT_DIR/config.sh
 
-PROPS_DIR=${PERSISTENT_DIR}/props
-vbmeta_size=$(sed -n 's/^vbmeta_size=//p' ${PERSISTENT_DIR}/config.sh 2> /dev/null)
-vbmeta_size=${vbmeta_size:-8192}
-nyx_resolve_avb_version
-nyx_resolve_prop_dates
-nyx_prop_tool_init "${prop_tool:-magisk}"
-nyx_apply_prop_presets "$PROPS_DIR" boot-completed
-if nyx_rp_needs_rebuild; then
-    nyx_rebuild_touched_areas "${hide_compact:-area}"
-fi
-
-nyx_start_repeat_loop "$PROPS_DIR"
-
 if [ -f $tmpfolder/logs/susfs_active ] || dmesg | grep -q "susfs:"; then
     status_txt="✅ Active"
 else

@@ -1,5 +1,0 @@
-# name: Encryption state
-# description: Reports userdata as encrypted.
-# enabled: 1
-
-reset  ro.crypto.state  encrypted

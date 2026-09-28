@@ -10,11 +10,11 @@ A modern **SuSFS** companion module for **KernelSU / KernelSU-Next** with a **Ma
 
 - 🥷 **SuSFS integration**: drives the SUSFS kernel interface for sus path, sus mount, sus maps, sus kstat, open redirects and try-umount
 - 🎨 **Material You WebUI**: full Material 3 design with light/dark support; the main screen surfaces four live stats — **sus path**, **sus maps**, **sus mount** and **try unmount** — that expand into detail lists
-- 🧩 **Prop-spoofing presets**: a config-driven preset system for spoofing device properties, with optional periodic re-apply for props that reset after boot
+- 🧩 **Prop spoofing lives in [NyxProps](https://github.com/poqdavid/nyxprops)**: the prop presets moved to their own module in v1.1.0, so each can be installed and updated on its own
 - 🔁 **Config-compatible**: reads the same configuration as `ksu_module_susfs`, so existing setups carry over
 - 📂 **Separate config directory**: keeps its own persistent state under `/data/adb/nyxsusfs`, independent of `ksu_module_susfs`
-- 🧰 **Bundled tooling**: ships `resetprop-rs` (arm64-v8a + armeabi-v7a) plus the `ksu_susfs` / `sus_su` helpers
-- 🩹 **Extended coverage**: covers extra props and paths, reimplemented from the underlying prop/path data and approach only — no third-party shell code
+- 🧰 **Bundled tooling**: ships the `ksu_susfs` / `sus_su` helpers
+- 🩹 **Extended coverage**: covers extra paths, reimplemented from the underlying path data and approach only — no third-party shell code
 
 ---
 
@@ -27,16 +27,19 @@ A modern **SuSFS** companion module for **KernelSU / KernelSU-Next** with a **Ma
 
 ## 📥 Installation
 
-1. 📦 Download the latest `nyx-susfs-*.zip` from the [**Releases**](https://github.com/poqdavid/nyx-susfs/releases) page
+1. 📦 Download the latest `nyxsusfs-*.zip` from the [**Releases**](https://github.com/poqdavid/nyxsusfs/releases) page
 2. 🧩 Open your **KernelSU / KernelSU-Next** manager → **Modules** → **Install from storage**, and select the zip
 3. 🔄 **Reboot**
 4. ⚙️ Open the module's **WebUI** from the manager to review status and configure
+
+> [!NOTE]
+> Upgrading from **v1.0.0**? Prop spoofing moved to **[NyxProps](https://github.com/poqdavid/nyxprops)**. Install it alongside NyxSUSFS to keep your prop presets working.
 
 ---
 
 ## 🖥️ WebUI
 
-The home screen shows four live counters — **sus path**, **sus maps**, **sus mount** and **try unmount** — each of which expands into the full list of active entries. Everything else (settings, presets, about) lives in its own section, with light and dark themes following the Material You palette.
+The home screen shows four live counters — **sus path**, **sus maps**, **sus mount** and **try unmount** — each of which expands into the full list of active entries. Everything else (paths, settings, about) lives in its own section, with light and dark themes following the Material You palette.
 
 ---
 
@@ -88,7 +91,7 @@ Flashing kernel-level modules always carries a risk of boot loops or an unbootab
 | **BRENE**              | rrr333nnn333      | [GitHub](https://github.com/rrr333nnn333/BRENE)                          |
 | **Magisk**             | topjohnwu         | [GitHub](https://github.com/topjohnwu/Magisk)                            |
 
-*Prop/path coverage takes inspiration from the data and approach of the projects above; the implementation is original.*
+*Path coverage takes inspiration from the data and approach of the projects above; the implementation is original.*
 
 *If you have contributed and are not listed here, please remind me!* 🙏
 

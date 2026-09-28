@@ -8,7 +8,6 @@ import { exec } from './ksu-bridge.js';
 export const MOD_DIR = '/data/adb/modules/nyxsusfs';
 export const PERSISTENT_DIR = '/data/adb/nyxsusfs';
 export const TMP_DIR = '/data/adb/ksu/nyxsusfs';
-export const PROPS_DIR = `${PERSISTENT_DIR}/props`;
 export const CONFIG_PATH = `${PERSISTENT_DIR}/config.sh`;
 export const STATS_PATH = `${TMP_DIR}/susfs_stats.txt`;
 export const LOG1_PATH = `${TMP_DIR}/logs/susfs1.log`;
@@ -40,9 +39,6 @@ const CATEGORY_SOURCES = {
 	try_umount: {
 		userspace: '^\\[try_umount',
 		kernel: 'to LH_TRY_UMOUNT_PATH',
-	},
-	prop: {
-		userspace: '^\\[prop\\]:',
 	},
 };
 
@@ -243,98 +239,6 @@ export async function setListFile(filename, contents) {
 	return { ok: errno === 0, error: stderr };
 }
 
-// ---------------------------------------------------------------------
-// Prop presets
-//
-// Each preset is a *.prop file under PROPS_DIR with a small comment
-// header (name / description / enabled) followed by "<mode> <prop>
-// <value>" rules. service.sh applies them in filename order at boot.
-// ---------------------------------------------------------------------
-
-/** Only ever build preset paths from a sanitised filename - the name for
- * a new preset is free text from the user, and it lands in a shell
- * command. Anything outside this set is rejected rather than escaped. */
-export function sanitisePresetFilename(name) {
-	const base = String(name).trim().replace(/\.prop$/i, '');
-	const cleaned = base.replace(/[^A-Za-z0-9._-]/g, '-').replace(/^-+|-+$/g, '');
-	return cleaned ? `${cleaned}.prop` : '';
-}
-
-function isSafePresetFilename(file) {
-	return /^[A-Za-z0-9._-]+\.prop$/.test(file) && !file.includes('..');
-}
-
-export async function listPropPresets() {
-	const cmd = `for f in '${PROPS_DIR}'/*.prop; do
-	[ -f "$f" ] || continue
-	b=$(basename "$f")
-	n=$(sed -n 's/^#[[:space:]]*name:[[:space:]]*//p' "$f" | head -n1)
-	d=$(sed -n 's/^#[[:space:]]*description:[[:space:]]*//p' "$f" | head -n1)
-	e=$(sed -n 's/^#[[:space:]]*enabled:[[:space:]]*\\([0-9][0-9]*\\).*/\\1/p' "$f" | head -n1)
-	s=$(sed -n 's/^#[[:space:]]*stage:[[:space:]]*\\([A-Za-z-]*\\).*/\\1/p' "$f" | head -n1)
-	lo=$(sed -n 's/^#[[:space:]]*min_sdk:[[:space:]]*\\([0-9][0-9]*\\).*/\\1/p' "$f" | head -n1)
-	hi=$(sed -n 's/^#[[:space:]]*max_sdk:[[:space:]]*\\([0-9][0-9]*\\).*/\\1/p' "$f" | head -n1)
-	c=$(grep -cE '^[[:space:]]*[a-z_]+[[:space:]]+[^[:space:]]+' "$f")
-	printf '%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\t%s\\n' "$b" "$n" "$d" "$e" "$c" "$s" "$lo" "$hi"
-done`;
-	const { stdout, errno } = await exec(cmd);
-	if (errno !== 0) return [];
-	return stdout
-		.split('\n')
-		.map((l) => l.split('\t'))
-		.filter((p) => p.length >= 5 && p[0])
-		.map(([file, name, description, enabled, count, stage, minSdk, maxSdk]) => ({
-			file,
-			name: name || file.replace(/\.prop$/, ''),
-			description: description || '',
-			// A preset with no enabled: header counts as enabled, matching
-			// what nyx_apply_prop_presets does at boot.
-			enabled: enabled === '' ? true : enabled === '1',
-			ruleCount: Number(count) || 0,
-			// Same default as the runner: no stage header means service.
-			stage: stage || 'service',
-			minSdk: minSdk || '',
-			maxSdk: maxSdk || '',
-		}));
-}
-
-export async function getPropPreset(file) {
-	if (!isSafePresetFilename(file)) return '';
-	const { stdout, errno } = await exec(`cat '${PROPS_DIR}/${file}' 2>/dev/null`);
-	return errno === 0 ? stdout : '';
-}
-
-export async function setPropPreset(file, contents) {
-	if (!isSafePresetFilename(file)) return { ok: false, error: 'invalid preset filename' };
-	const b64 = btoa(unescape(encodeURIComponent(contents)));
-	const { errno, stderr } = await exec(
-		`mkdir -p '${PROPS_DIR}' && echo '${b64}' | base64 -d > '${PROPS_DIR}/${file}'`
-	);
-	return { ok: errno === 0, error: stderr };
-}
-
-/** Rewrites just the '# enabled:' header line, leaving the rest of the
- * preset - including the user's own edits and comments - untouched. */
-export async function setPropPresetEnabled(file, enabled) {
-	if (!isSafePresetFilename(file)) return { ok: false, error: 'invalid preset filename' };
-	const val = enabled ? '1' : '0';
-	const target = `${PROPS_DIR}/${file}`;
-	const cmd = `awk -v en='${val}' '
-BEGIN { done = 0 }
-done == 0 && /^#[ \\t]*enabled:/ { print "# enabled: " en; done = 1; next }
-{ print }
-END { if (done == 0) print "# enabled: " en }
-' '${target}' > '${target}.nyxtmp' && mv '${target}.nyxtmp' '${target}'`;
-	const { errno, stderr } = await exec(cmd);
-	return { ok: errno === 0, error: stderr };
-}
-
-export async function deletePropPreset(file) {
-	if (!isSafePresetFilename(file)) return { ok: false, error: 'invalid preset filename' };
-	const { errno, stderr } = await exec(`rm -f '${PROPS_DIR}/${file}'`);
-	return { ok: errno === 0, error: stderr };
-}
-
 /**
  * Active (non-comment, non-blank) entry count for each path list.
  * @param {string[]} files
@@ -392,28 +296,19 @@ export async function getDeviceInfo() {
  * The first item is a self-test of SuSFS's own path hiding: SuSFS redirects a
  * hidden path to a canary name (..5.u.S) that must NOT be reachable - if it is
  * reachable, sus_path hiding isn't taking effect. (Probe borrowed from BRENE.)
+ * The prop rows (verified boot state, bootloader, dm-verity, security patch)
+ * live in NyxProps.
  */
 export async function getVerification() {
-	const [canary, vbs, locked, verity, selinux, spl] = await Promise.all([
+	const [canary, selinux] = await Promise.all([
 		exec('[ -e /storage/emulated/0/..5.u.S ] && echo exposed || echo hidden'),
-		exec('getprop ro.boot.verifiedbootstate 2>/dev/null'),
-		exec('getprop ro.boot.flash.locked 2>/dev/null'),
-		exec('getprop ro.boot.veritymode 2>/dev/null'),
 		exec('getenforce 2>/dev/null'),
-		exec('getprop ro.build.version.security_patch 2>/dev/null'),
 	]);
 	const t = (r) => (r.stdout || '').trim();
 	const c = t(canary);
-	const l = t(locked);
 	const se = t(selinux);
-	const ve = t(verity);
-	const v = t(vbs);
 	return [
 		{ key: 'path_hide', ok: c === 'hidden', value: c === 'hidden' ? 'ok' : 'bad' },
-		{ key: 'vbs', ok: v === 'green', value: v || '—' },
-		{ key: 'bootloader', ok: l === '1', value: l === '1' ? 'locked' : (l === '' ? '—' : 'unlocked') },
-		{ key: 'verity', ok: ve === 'enforcing', value: ve || '—' },
 		{ key: 'selinux', ok: /enforc/i.test(se), value: se || '—' },
-		{ key: 'spl', ok: null, value: t(spl) || '—' },
 	];
 }

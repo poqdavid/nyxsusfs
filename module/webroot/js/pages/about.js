@@ -60,10 +60,9 @@ export function renderAboutShell(root) {
 			<p style="margin:0 0 8px;">${t('about_credits_intro', "NyxSUSFS is a from-scratch WebUI and script layer built to sit on top of <strong>ksu_module_susfs</strong>'s config layout, so it stays a drop-in for anyone already using it.")}</p>
 			<p style="margin:0 0 8px;">${t('about_credits_susfs', '<strong>SuSFS</strong> by <strong>simonpunk</strong> is the kernel magic that makes all of this possible. None of this exists without it.')}</p>
 			<p style="margin:0 0 8px;">${t('about_credits_sidex15', "<strong>ksu_module_susfs</strong> by <strong>sidex15</strong> is the original module Nyx grew out of. Nyx keeps its config layout so it stays a friendly drop-in for anyone already using it, and ships sidex15's <code>ksu_susfs</code> binaries. Huge thanks for the foundation.")}</p>
-			<p style="margin:0 0 8px;">${t('about_credits_resetprop_rs', 'Nyx bundles <strong>resetprop-rs</strong> by <strong>Enginex0</strong> as an optional stealth prop backend. Thank you for a great tool.')}</p>
-			<p style="margin:0 0 8px;">${t('about_credits_brene', "A number of Nyx's prop-spoofing and mount-hiding ideas were sparked by studying <strong>BRENE</strong> by <strong>rrr333nnn333</strong>. the ideas were reimplemented in Nyx's own way, but the inspiration deserves a shout-out.")}</p>
+			<p style="margin:0 0 8px;">${t('about_credits_brene', "A number of Nyx's mount-hiding ideas were sparked by studying <strong>BRENE</strong> by <strong>rrr333nnn333</strong>. The ideas were reimplemented in Nyx's own way, but the inspiration deserves a shout-out.")}</p>
 			<p style="margin:0 0 8px;">${t('about_credits_rezygisk', 'The Zygisk-aware unmounting and mount-source detection were guided by the <strong>ReZygisk</strong> project (<strong>PerformanC</strong>), thanks for the pointers on doing it right.')}</p>
-			<p style="margin:0 0 8px;">${t('about_credits_poqdavid', 'Everything else, the WebUI, the preset systems, the targeted hiding, the glue, I built myself, with love for the community. Issues and translations welcome.')}</p>
+			<p style="margin:0 0 8px;">${t('about_credits_poqdavid', 'Everything else, the WebUI, the targeted hiding, the glue, I built myself, with love for the community. Issues and translations welcome. Prop spoofing now lives in its own module, NyxProps.')}</p>
 			<p style="margin:0; color: var(--md-on-surface-variant); font-size: 13px;">${t('about_credits_config', 'Config &amp; logs:')} <code>${PERSISTENT_DIR}</code></p>
 		</div>
 	`;

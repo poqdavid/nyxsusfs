@@ -38,7 +38,6 @@ let available = { en: 'English' };
 const SAFETY = {
 	app_title: 'NyxSUSFS',
 	nav_home: 'Home',
-	nav_props: 'Props',
 	nav_paths: 'Paths',
 	nav_settings: 'Settings',
 	nav_about: 'About',

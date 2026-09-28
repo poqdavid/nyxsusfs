@@ -53,14 +53,7 @@ const VERIFY_META = {
 		i18n: 'home_verify_pathhide', label: 'Path-hiding self-test',
 		fmt: (v) => (v === 'ok' ? t('home_verify_working', 'Working') : t('home_verify_notworking', 'Not working')),
 	},
-	vbs: { i18n: 'home_verify_vbs', label: 'Verified boot state', fmt: (v) => v },
-	bootloader: {
-		i18n: 'home_verify_bootloader', label: 'Bootloader',
-		fmt: (v) => (v === 'locked' ? t('home_verify_locked', 'Locked') : v === 'unlocked' ? t('home_verify_unlocked', 'Unlocked') : v),
-	},
-	verity: { i18n: 'home_verify_verity', label: 'dm-verity', fmt: (v) => v },
 	selinux: { i18n: 'home_verify_selinux', label: 'SELinux', fmt: (v) => v },
-	spl: { i18n: 'home_verify_spl', label: 'Security patch', fmt: (v) => v },
 };
 
 function checkRowHtml(item) {

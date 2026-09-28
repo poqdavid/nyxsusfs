@@ -7,14 +7,12 @@ import { checkBinaryUpdate, applyBinaryUpdate, describeBinaryStatus } from './bi
 import { applyTheme, applyMonet } from './theme.js';
 import { initKeyboardHandling } from './keyboard.js';
 import { renderHomeShell, refreshHome, setHomeNotice } from './pages/home.js';
-import { renderPropsShell, refreshProps } from './pages/props.js';
 import { renderPathsShell, refreshPaths } from './pages/paths.js';
 import { renderSettingsShell, refreshSettings } from './pages/settings.js';
 import { renderAboutShell, refreshAbout } from './pages/about.js';
 
 const PAGES = {
 	home: { render: renderHomeShell, refresh: refreshHome, icon: icons.home, label: 'Home' },
-	props: { render: renderPropsShell, refresh: refreshProps, icon: icons.tune, label: 'Props' },
 	paths: { render: renderPathsShell, refresh: refreshPaths, icon: icons.paths, label: 'Paths' },
 	settings: { render: renderSettingsShell, refresh: refreshSettings, icon: icons.settings, label: 'Settings' },
 	about: { render: renderAboutShell, refresh: refreshAbout, icon: icons.info, label: 'About' },

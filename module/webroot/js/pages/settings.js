@@ -19,25 +19,6 @@ const GROUPS = [
 		],
 	},
 	{
-		title: 'Property spoofing', i18nTitle: 'set_group_props',
-		items: [
-			{
-				key: 'prop_tool', i18n: 'set_prop_tool_label', i18nDesc: 'set_prop_tool_desc', i18nOpts: ['set_prop_tool_opt_magisk', 'set_prop_tool_opt_auto', 'set_prop_tool_opt_rs'], label: 'Prop backend', type: 'select',
-				options: [['magisk', 'Stock resetprop (default)'], ['auto', 'Auto (resetprop-rs if available)'], ['rs', 'resetprop-rs (stealth)']],
-				desc: 'The stock resetprop is the default. resetprop-rs applies changes as stealth writes and count-preserving deletes (--nuke), leaving no serial or gap trace — switch to Auto (uses it when the bundled/downloaded binary works, else stock) or resetprop-rs to opt in. When resetprop-rs is active the rebuild option below is not needed and is skipped.',
-			},
-			{
-				key: 'hide_compact', i18n: 'set_hide_compact_label', i18nDesc: 'set_hide_compact_desc', i18nOpts: ['set_hide_compact_opt_area', 'set_hide_compact_opt_global', 'set_hide_compact_opt_off'], label: 'Rebuild prop areas after changes', type: 'select',
-				options: [['area', 'Touched areas only (recommended)'], ['global', 'All areas'], ['off', 'Off']],
-				desc: 'Only used with the stock resetprop. Deleting a prop leaves a reclaimable hole in property storage; this compacts it. "Touched areas only" rebuilds just the areas Nyx changed; "All areas" can log harmless errors on devices with an unparseable area (e.g. telephony props). Reclaims the storage gap, not serial counters. Ignored when resetprop-rs is the backend.',
-			},
-			{
-				key: 'repeat_enabled', i18n: 'set_repeat_enabled_label', i18nDesc: 'set_repeat_enabled_desc', label: 'Prop-preset repeat loop', type: 'bool',
-				desc: "Master switch for the background loop that periodically re-applies any preset carrying a '# repeat:' header, for the rare prop that resets after boot. Turning it off stops the loop without a reboot. Inactive unless a preset opts in, and the loop is itself a detection signal, so leave it on only when a preset actually needs it.",
-			},
-		],
-	},
-	{
 		title: 'Mount & path hiding', i18nTitle: 'set_group_mounts',
 		items: [
 			{

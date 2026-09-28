@@ -3,7 +3,6 @@ MODDIR=${0%/*}
 SUSFS_BIN=/data/adb/ksu/bin/ksu_susfs
 . ${MODDIR}/utils.sh
 PERSISTENT_DIR=/data/adb/nyxsusfs
-PROPS_DIR=${PERSISTENT_DIR}/props
 tmpfolder=/data/adb/ksu/nyxsusfs
 logfile1="$tmpfolder/logs/susfs1.log"
 logfile="$tmpfolder/logs/susfs.log"
@@ -96,19 +95,6 @@ endmsg=$(echo "$dmesg_snapshot" | grep -E '^\[ *[0-9]' | cut -d']' -f1 | sed 's/
 echo "service=$endmsg" >> $tmpfolder/logs/boot_stage_time.sh
 
 resetprop -w sys.boot_completed 0
-
-vbmeta_size=$(sed -n 's/^vbmeta_size=//p' ${PERSISTENT_DIR}/config.sh 2> /dev/null)
-vbmeta_size=${vbmeta_size:-8192}
-
-nyx_resolve_avb_version
-nyx_resolve_prop_dates
-
-nyx_prop_tool_init "${prop_tool:-magisk}"
-nyx_apply_prop_presets "$PROPS_DIR" service
-
-if nyx_rp_needs_rebuild; then
-    nyx_rebuild_touched_areas "${hide_compact:-area}"
-fi
 
 if echo "$susfs_features" | grep -q "CONFIG_KSU_SUSFS_OPEN_REDIRECT"; then
     grep -v "#" "$PERSISTENT_DIR/sus_open_redirect.txt" | while IFS= read -r line; do
