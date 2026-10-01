@@ -39,7 +39,7 @@ A modern **SuSFS** companion module for **KernelSU / KernelSU-Next** with a **Ma
 
 ## 🖥️ WebUI
 
-The home screen shows four live counters — **sus path**, **sus maps**, **sus mount** and **try unmount** — each of which expands into the full list of active entries. Everything else (paths, settings, about) lives in its own section, with light and dark themes following the Material You palette.
+The home screen shows four live counters — **sus path**, **sus maps**, **sus mount** and **try unmount** — each of which expands into the full list of active entries. Everything else (paths, settings, logs, about) lives in its own section, with light and dark themes following the Material You palette.
 
 ---
 

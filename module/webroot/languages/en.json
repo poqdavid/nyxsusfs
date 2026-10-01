@@ -3,6 +3,7 @@
   "nav_home": "Home",
   "nav_paths": "Paths",
   "nav_settings": "Settings",
+  "nav_logs": "Logs",
   "nav_about": "About",
   "action_refresh": "Refresh",
   "opt_off": "Off",
@@ -114,5 +115,14 @@
   "about_license_copyright": "Copyright © 2026 poqdavid",
   "about_license_body": "NyxSUSFS is free software under the GNU Affero General Public License v3.0 (AGPL-3.0-only). You may redistribute and modify it under that license. It comes with ABSOLUTELY NO WARRANTY.",
   "about_license_where": "License text and notices:",
-  "about_license_source": "Source code:"
+  "about_license_source": "Source code:",
+  "logs_tab_activity": "Activity",
+  "logs_tab_kernel": "Kernel",
+  "logs_activity_desc": "What NyxSUSFS did at each boot stage.",
+  "logs_kernel_desc": "The lines SuSFS itself wrote to the kernel log.",
+  "logs_loading": "Loading…",
+  "logs_empty": "Nothing logged this boot yet.",
+  "logs_kernel_empty": "No SuSFS kernel messages captured this boot.",
+  "logs_truncated": "Showing the last {shown} of {total} lines.",
+  "logs_hint": "Both logs are rewritten at every boot. Newest at the bottom. Tap refresh in the top bar to reload."
 }

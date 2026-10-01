@@ -393,6 +393,36 @@ export async function getVerification() {
 }
 
 // ---------------------------------------------------------------------------
+// Logs. Both are rewritten at every boot: susfs1.log is what NyxSUSFS did,
+// susfs.log the SuSFS lines captured from the kernel log.
+
+/** Most lines the Logs page shows of each log - the end of it, newest last. */
+export const LOG_LINES = 1000;
+
+function logCommands(path) {
+	return {
+		text: `tail -n ${LOG_LINES} '${path}' 2>/dev/null`,
+		total: `wc -l < '${path}' 2>/dev/null`,
+	};
+}
+
+function parseLog({ text, total }) {
+	return {
+		text: text.errno === 0 ? text.stdout : '',
+		total: Number((total.stdout || '').trim()) || 0,
+	};
+}
+
+/** Both boot logs, for the Logs page. */
+export async function getLogs() {
+	const r = await execBatch({
+		...withPrefix('activity.', logCommands(LOG1_PATH)),
+		...withPrefix('kernel.', logCommands(LOG_PATH)),
+	});
+	return { activity: parseLog(takePrefix('activity.', r)), kernel: parseLog(takePrefix('kernel.', r)) };
+}
+
+// ---------------------------------------------------------------------------
 // Whole-page reads, one exec each.
 
 function homeCommands() {

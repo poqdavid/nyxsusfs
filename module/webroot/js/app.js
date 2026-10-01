@@ -9,12 +9,14 @@ import { initKeyboardHandling } from './keyboard.js';
 import { renderHomeShell, refreshHome, renderHome, setHomeNotice } from './pages/home.js';
 import { renderPathsShell, refreshPaths, renderPathCounts, PATH_FILE_NAMES } from './pages/paths.js';
 import { renderSettingsShell, refreshSettings, applySettingsConfig } from './pages/settings.js';
+import { renderLogsShell, refreshLogs } from './pages/logs.js';
 import { renderAboutShell, refreshAbout, renderAbout, syncMonetSwitch } from './pages/about.js';
 
 const PAGES = {
 	home: { render: renderHomeShell, refresh: refreshHome, icon: icons.home, label: 'Home' },
 	paths: { render: renderPathsShell, refresh: refreshPaths, icon: icons.paths, label: 'Paths' },
 	settings: { render: renderSettingsShell, refresh: refreshSettings, icon: icons.settings, label: 'Settings' },
+	logs: { render: renderLogsShell, refresh: refreshLogs, icon: icons.logs, label: 'Logs' },
 	about: { render: renderAboutShell, refresh: refreshAbout, icon: icons.info, label: 'About' },
 };
 
@@ -24,10 +26,11 @@ const refreshBtn = document.getElementById('refresh-btn');
 
 let currentPage = 'home';
 
-// Pages whose data is on screen. Startup fills all four from one batched
-// read; after that a tab switch only swaps the visible section and never
-// touches the shell (every exec() freezes the page - see ksu-bridge.js).
-// The top-bar button re-reads the page you're on.
+// Pages whose data is on screen. Startup fills all but Logs from one
+// batched read, and Logs is read on its first visit; after that a tab
+// switch only swaps the visible section and never touches the shell
+// (every exec() freezes the page - see ksu-bridge.js). The top-bar button
+// re-reads the page you're on.
 const loaded = new Set();
 const loading = new Map();
 
@@ -152,7 +155,7 @@ async function init() {
 	renderPathCounts(pageEl('paths'), data.pathCounts);
 	applySettingsConfig(pageEl('settings'), config);
 	renderAbout(pageEl('about'), data.about);
-	for (const key of Object.keys(PAGES)) loaded.add(key);
+	for (const key of ['home', 'paths', 'settings', 'about']) loaded.add(key);
 	goToPage('home');
 
 	// Opt-in: the key defaults to 1 (skip) in config.sh.

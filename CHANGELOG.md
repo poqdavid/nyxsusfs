@@ -1,5 +1,11 @@
 # Changelog
 
+## [v1.3.0] - 2026-10-01
+
+### ✨ WebUI
+
+* **Logs tab.** A new tab between Settings and About shows this boot's two logs, newest at the bottom, with a switch between them. *Activity* is what NyxSUSFS did at each boot stage (`susfs1.log`). *Kernel* is the lines SuSFS wrote to the kernel log (`susfs.log`). Each shows its last 1,000 lines, with a note when a log is longer. The logs are read the first time you open the tab, so opening the WebUI is no slower; the refresh button in the top bar re-reads them.
+
 ## [v1.2.0] - 2026-09-28
 
 ### ⚡ WebUI performance
