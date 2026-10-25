@@ -56,14 +56,17 @@ nyxsusfs_config_check() {
     ui_print "  Keep current settings in 10 seconds"
     ui_print "****************************************"
     local timeout=10
-    local start_time=$(date +%s)
+    local start_time
+    start_time=$(date +%s)
     while true; do
-        local current_time=$(date +%s)
+        local current_time
+        current_time=$(date +%s)
         if [ $((current_time - start_time)) -ge $timeout ]; then
             ui_print "[-] Timeout: keeping current settings"
             break
         fi
-        local key_event=$(timeout 0.5 getevent -l 2> /dev/null)
+        local key_event
+        key_event=$(timeout 0.5 getevent -l 2> /dev/null)
         if echo "$key_event" | grep -q "KEY_VOLUMEUP"; then
             ui_print "[-] Resetting NyxSUSFS settings to default..."
             rm -rf ${PERSISTENT_DIR}
@@ -88,14 +91,8 @@ check() {
     fi
 }
 
-ksuver=$(${KSU_BIN} debug version | cut -d' ' -f3)
+ksuver=${KSU_KERNEL_VER_CODE:-$(${KSU_BIN} debug version | cut -d' ' -f3)}
 ui_print "[-] Detected KernelSU version: $ksuver"
-susfs_temp_bin="pre-20000"
-
-if [ ${ksuver} -gt 19999 ] 2> /dev/null; then
-    ui_print "[-] KernelSU version is using supercalls, using v2.0.0 binary for checking"
-    susfs_temp_bin="20000"
-fi
 
 chmod +x "${TMPDIR}/nyxsusfs/tools/ksu_susfs_arm64"
 SUSFS_VERSION_RAW="$(${TMPDIR}/nyxsusfs/tools/ksu_susfs_arm64 show version)"

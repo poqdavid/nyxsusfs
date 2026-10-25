@@ -16,3 +16,6 @@ Thumbs.db
 # Rust
 /target/
 module/bin/nyxsusfs
+
+# Python bytecode from the CI test scripts
+__pycache__/

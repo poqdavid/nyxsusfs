@@ -43,6 +43,8 @@ Source code: <https://github.com/poqdavid/nyxsusfs>
   path-hiding self-test probe.
 - **ReZygisk** by PerformanC, GPL-3.0 — <https://github.com/PerformanC/ReZygisk>:
   the Zygisk-aware unmounting and mount-source detection.
+- **Duck ToolBox** by Eltavine, MIT — <https://github.com/eltavine/Duck-ToolBox>:
+  the CI job layout, the Telegram build caption and the installer checks.
 
 ## Build-time dependencies
 
