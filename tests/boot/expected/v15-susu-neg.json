@@ -1,0 +1,249 @@
+{
+ "scenario": "v15-susu-neg",
+ "stages": [
+  {
+   "stage": "post-fs-data",
+   "exit": 0,
+   "calls": [
+    "dmesg",
+    "ksu_susfs [show] [enabled_features]",
+    "ksu_susfs [show] [version]"
+   ],
+   "changed": {
+    "/data/adb/ksu/nyxsusfs/logs": [
+     "0o755",
+     "0:0",
+     null
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/boot_stage_time.sh": [
+     "0o644",
+     "0:0",
+     "post_fs_data=101.000001\n"
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/susfs.log": [
+     "0o644",
+     "0:0",
+     "\n[    1.234567] susfs: init\n[    2.500000] ksu_susfs: something\n[   12.345678] susfs: set SUS_MOUNT for /debug_ramdisk\n[   13.000001] susfs_auto_add_sus_bind_mount: /system/etc/hosts\n[   20.000000] SUSFS: upper-case line\n[  101.000001] susfs: stage marker 1"
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/susfs1.log": [
+     "0o644",
+     "0:0",
+     "\nnyxsusfs/post-fs-data: [logging_initialized]"
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/susfs_active": [
+     "0o644",
+     "0:0",
+     ""
+    ],
+    "/data/adb/modules/nyxsusfs/module.prop": [
+     "0o644",
+     "0:0",
+     "id=nyxsusfs\nname=NyxSUSFS\nversion=<module.prop>\nversionCode=<module.prop>\nauthor=poqdavid\ndescription=[Status: Waiting for reboot] A modern SuSFS companion for KernelSU/KernelSU-Next with a Material You WebUI. Config-compatible with ksu_module_susfs.\nupdateJson=https://raw.githubusercontent.com/poqdavid/nyxsusfs/main/update.json\n"
+    ],
+    "/data/adb/nyxsusfs/config.sh": [
+     "0o644",
+     "0:0",
+     "susfs_log=1\nsus_su=-1\nsus_su_active=2\nhide_cusrom=2\nhide_vendor_sepolicy=0\nhide_compat_matrix=0\nhide_gapps=0\nhide_revanced=0\nspoof_cmdline=0\nhide_loops=0\nhide_injections=1\nhide_suspicious_pty=0\nhide_custom_recovery=1\nhide_addon_d=0\nhide_framework_res=0\nhide_data_local_tmp=1\nhide_nonstd_sdcard=0\nhide_nonstd_sdcard_android=1\nhide_lineage_strings=0\nforce_hide_lsposed=0\nspoof_uname=0\nhide_sus_mnts_for_all_or_non_su_procs=1\numount_for_zygote_iso_service=0\nauto_try_umount=0\nskip_kernel_umount_zygisk=1\ndisable_add_try_umount=0\nskip_legit_mounts=0\navc_log_spoofing=0\nemulate_vold_app_data=0\ndisable_webui_bin_update=1\nkernel_version='default'\nkernel_build='default'\nwebui_theme='system'\nwebui_monet=0\nwebui_fullscreen=1"
+    ],
+    "/data/adb/nyxsusfs/legit_mounts.txt": [
+     "0o644",
+     "0:0",
+     "/data/adb/modules/modA/system/bin/tool\n"
+    ],
+    "/data/adb/nyxsusfs/sus_kstat_statically.json": [
+     "0o644",
+     "0:0",
+     "[\n  {\n    \"path\": \"/system/framework/services.jar\",\n    \"ino\": \"1234\",\n    \"dev\": \"64768\",\n    \"nlink\": \"1\",\n    \"size\": \"2048\",\n    \"atime\": \"1700000000\",\n    \"atime_nsec\": \"0\",\n    \"mtime\": \"1700000000\",\n    \"mtime_nsec\": \"0\",\n    \"ctime\": \"1700000000\",\n    \"ctime_nsec\": \"0\",\n    \"blocks\": \"8\",\n    \"blksize\": \"4096\"\n  },\n  {\n    \"path\": \"/system/bin/app_process64\",\n    \"ino\": \"77\",\n    \"dev\": \"64768\",\n    \"nlink\": \"1\",\n    \"size\": \"100\",\n    \"atime\": \"1\",\n    \"atime_nsec\": \"2\",\n    \"mtime\": \"3\",\n    \"mtime_nsec\": \"4\",\n    \"ctime\": \"5\",\n    \"ctime_nsec\": \"6\",\n    \"blocks\": \"7\",\n    \"blksize\": \"4096\",\n    \"ino_again\": \"x\"\n  },\n  {\n    \"path\": \"\",\n    \"ino\": \"1\"\n  }\n]\n"
+    ],
+    "/data/adb/nyxsusfs/sus_maps.txt": [
+     "0o644",
+     "0:0",
+     "/system/framework/framework-res.apk\n/data/adb/modules/modB/zygisk/arm64-v8a.so\n"
+    ],
+    "/data/adb/nyxsusfs/sus_mount.txt": [
+     "0o644",
+     "0:0",
+     "# hide\n/debug_ramdisk\n/system/etc/hosts # inline comment drops the line\n  /data/adb/modules/modA/system  \n"
+    ],
+    "/data/adb/nyxsusfs/sus_open_redirect.txt": [
+     "0o644",
+     "0:0",
+     "# orig redirected stage [uid]\n/system/etc/hosts /data/adb/nyxsusfs/hosts 0\n/system/etc/hosts /data/adb/nyxsusfs/hosts2 0 5\n/vendor/etc/fstab.qcom /data/adb/nyxsusfs/fstab 1\n/missing/orig /data/adb/nyxsusfs/missing 1 3\n/system/etc/x /data/adb/nyxsusfs/x 2\n"
+    ],
+    "/data/adb/nyxsusfs/sus_path.txt": [
+     "0o644",
+     "0:0",
+     "# comment\n/data/adb/modules/foo\n/system/addon.d\n   /system/bin/install-recovery.sh   \n/storage/emulated/0/TWRP 2\n/data/never_there 3\n\n/data/adb/ksu\n"
+    ],
+    "/data/adb/nyxsusfs/sus_path_loop.txt": [
+     "0o644",
+     "0:0",
+     "#c\n/data/local/tmp/frida-server\n/dev/pts/7 1\n/storage/emulated/0/MyStuff"
+    ],
+    "/data/adb/nyxsusfs/try_umount.txt": [
+     "0o644",
+     "0:0",
+     "/data/adb/modules/modA/system/bin/tool\n# x\n/system/etc/hosts\n"
+    ],
+    "/mnt/nyxsusfs": [
+     "0o755",
+     "0:0",
+     null
+    ]
+   },
+   "removed": []
+  },
+  {
+   "stage": "post-mount",
+   "exit": 0,
+   "calls": [
+    "dmesg",
+    "ksu_susfs [add_sus_mount] [/data/adb/modules/modA/system]",
+    "ksu_susfs [add_sus_mount] [/debug_ramdisk]",
+    "ksu_susfs [add_try_umount] [/data/adb/modules/modA/system/bin/tool] [1]",
+    "ksu_susfs [add_try_umount] [/system/etc/hosts] [1]"
+   ],
+   "changed": {
+    "/data/adb/ksu/nyxsusfs/logs/boot_stage_time.sh": [
+     "0o644",
+     "0:0",
+     "post_fs_data=101.000001\npost_mount=102.000002\n"
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/susfs.log": [
+     "0o644",
+     "0:0",
+     "\n[    1.234567] susfs: init\n[    2.500000] ksu_susfs: something\n[   12.345678] susfs: set SUS_MOUNT for /debug_ramdisk\n[   13.000001] susfs_auto_add_sus_bind_mount: /system/etc/hosts\n[   20.000000] SUSFS: upper-case line\n[  101.000001] susfs: stage marker 1\n[  101.000001] susfs: stage marker 1\n[  102.000002] susfs: stage marker 2"
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/susfs1.log": [
+     "0o644",
+     "0:0",
+     "\n[sus_mount]: nyxsusfs/post-mount /data/adb/modules/modA/system\n[sus_mount]: nyxsusfs/post-mount /debug_ramdisk\n[try_umount]: nyxsusfs/post-mount /data/adb/modules/modA/system/bin/tool\n[try_umount]: nyxsusfs/post-mount /system/etc/hosts\nnyxsusfs/post-fs-data: [logging_initialized]"
+    ]
+   },
+   "removed": []
+  },
+  {
+   "stage": "service",
+   "exit": 0,
+   "calls": [
+    "dmesg",
+    "ksu_susfs [add_open_redirect] [/missing/orig] [/data/adb/nyxsusfs/missing]",
+    "ksu_susfs [add_open_redirect] [/vendor/etc/fstab.qcom] [/data/adb/nyxsusfs/fstab]",
+    "ksu_susfs [add_sus_kstat_statically] [/data/adb/nyxsusfs/fstab] [INO:/vendor/etc/fstab.qcom] [65024] [default] [default] [1700000000] [0] [1700000000] [0] [CTIME] [0] [8] [512]",
+    "ksu_susfs [add_sus_kstat_statically] [/data/adb/nyxsusfs/missing]",
+    "ksu_susfs [enable_log] [1]",
+    "ksu_susfs [show] [enabled_features]",
+    "ksu_susfs [show] [version]",
+    "ksu_susfs [sus_su] [0]",
+    "resetprop [-w] [sys.boot_completed] [0]"
+   ],
+   "changed": {
+    "/data/adb/ksu/nyxsusfs/logs/boot_stage_time.sh": [
+     "0o644",
+     "0:0",
+     "post_fs_data=101.000001\npost_mount=102.000002\nservice=103.000003\n"
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/susfs.log": [
+     "0o644",
+     "0:0",
+     "\n[    1.234567] susfs: init\n[    2.500000] ksu_susfs: something\n[   12.345678] susfs: set SUS_MOUNT for /debug_ramdisk\n[   13.000001] susfs_auto_add_sus_bind_mount: /system/etc/hosts\n[   20.000000] SUSFS: upper-case line\n[  101.000001] susfs: stage marker 1\n[  101.000001] susfs: stage marker 1\n[  102.000002] susfs: stage marker 2\n[  102.000002] susfs: stage marker 2\n[  103.000003] susfs: stage marker 3"
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/susfs1.log": [
+     "0o644",
+     "0:0",
+     "\n[add_sus_kstat_statically]: nyxsusfs/service /missing/orig\n[add_sus_kstat_statically]: nyxsusfs/service /vendor/etc/fstab.qcom\n[open_redirect]: nyxsusfs/service /missing/orig -> /data/adb/nyxsusfs/missing\n[open_redirect]: nyxsusfs/service /vendor/etc/fstab.qcom -> /data/adb/nyxsusfs/fstab\n[sus_mount]: nyxsusfs/post-mount /data/adb/modules/modA/system\n[sus_mount]: nyxsusfs/post-mount /debug_ramdisk\n[try_umount]: nyxsusfs/post-mount /data/adb/modules/modA/system/bin/tool\n[try_umount]: nyxsusfs/post-mount /system/etc/hosts\nnyxsusfs/post-fs-data: [logging_initialized]"
+    ],
+    "/data/adb/nyxsusfs/config.sh": [
+     "0o644",
+     "0:0",
+     "susfs_log=1\nsus_su=0\nsus_su_active=0\nhide_cusrom=2\nhide_vendor_sepolicy=0\nhide_compat_matrix=0\nhide_gapps=0\nhide_revanced=0\nspoof_cmdline=0\nhide_loops=0\nhide_injections=1\nhide_suspicious_pty=0\nhide_custom_recovery=1\nhide_addon_d=0\nhide_framework_res=0\nhide_data_local_tmp=1\nhide_nonstd_sdcard=0\nhide_nonstd_sdcard_android=1\nhide_lineage_strings=0\nforce_hide_lsposed=0\nspoof_uname=0\nhide_sus_mnts_for_all_or_non_su_procs=1\numount_for_zygote_iso_service=0\nauto_try_umount=0\nskip_kernel_umount_zygisk=1\ndisable_add_try_umount=0\nskip_legit_mounts=0\navc_log_spoofing=0\nemulate_vold_app_data=0\ndisable_webui_bin_update=1\nkernel_version='default'\nkernel_build='default'\nwebui_theme='system'\nwebui_monet=0\nwebui_fullscreen=1"
+    ]
+   },
+   "removed": []
+  },
+  {
+   "stage": "boot-completed",
+   "exit": 0,
+   "calls": [
+    "dmesg",
+    "dmesg",
+    "ksu_susfs [add_open_redirect] [/system/etc/hosts] [/data/adb/nyxsusfs/hosts2]",
+    "ksu_susfs [add_open_redirect] [/system/etc/hosts] [/data/adb/nyxsusfs/hosts]",
+    "ksu_susfs [add_sus_kstat_statically] [/data/adb/nyxsusfs/hosts2] [INO:/system/etc/hosts] [65024] [default] [default] [1700000000] [0] [1700000000] [0] [CTIME] [0] [8] [512]",
+    "ksu_susfs [add_sus_kstat_statically] [/data/adb/nyxsusfs/hosts] [INO:/system/etc/hosts] [65024] [default] [default] [1700000000] [0] [1700000000] [0] [CTIME] [0] [8] [512]",
+    "ksu_susfs [add_sus_kstat_statically] [/system/bin/app_process64] [77] [64768] [1] [100] [1] [2] [3] [4] [5] [6] [7] [4096]",
+    "ksu_susfs [add_sus_kstat_statically] [/system/framework/services.jar] [1234] [64768] [1] [2048] [1700000000] [0] [1700000000] [0] [1700000000] [0] [8] [4096]",
+    "ksu_susfs [add_sus_kstat_statically] [1] [] [] [] [] [] [] [] [] [] [] [] []",
+    "ksu_susfs [add_sus_map] [/data/adb/modules/modA/system/bin/tool]",
+    "ksu_susfs [add_sus_map] [/data/adb/modules/modA/system/lib64/libmodA.so]",
+    "ksu_susfs [add_sus_map] [/data/adb/modules/modA/system/lib64/libmodA.so]",
+    "ksu_susfs [add_sus_map] [/data/adb/modules/modB/zygisk/arm64-v8a.so]",
+    "ksu_susfs [add_sus_map] [/data/adb/modules/modB/zygisk/arm64-v8a.so]",
+    "ksu_susfs [add_sus_map] [/data/adb/modules/modC/system/etc/with space.conf]",
+    "ksu_susfs [add_sus_map] [/data/lineageos_updates]",
+    "ksu_susfs [add_sus_map] [/product/etc/permissions/privapp-permissions-pixelos.xml]",
+    "ksu_susfs [add_sus_map] [/system/addon.d/50-lineage.sh]",
+    "ksu_susfs [add_sus_map] [/system/app/crdroid.dir]",
+    "ksu_susfs [add_sus_map] [/system/etc/ROM.EVOLUTION.txt]",
+    "ksu_susfs [add_sus_map] [/system/etc/init/lineage-updater.rc]",
+    "ksu_susfs [add_sus_map] [/system/etc/permissions/org.lineageos.platform.xml]",
+    "ksu_susfs [add_sus_map] [/system/framework/framework-res.apk]",
+    "ksu_susfs [add_sus_map] [/system/media/Lineage Sounds/ring.ogg]",
+    "ksu_susfs [add_sus_map] [/vendor/etc/init/vendor.lineage.rc]",
+    "ksu_susfs [add_sus_path] [/data/adb/ksu]",
+    "ksu_susfs [add_sus_path] [/data/adb/modules/foo]",
+    "ksu_susfs [add_sus_path] [/data/never_there]",
+    "ksu_susfs [add_sus_path] [/storage/emulated/0/TWRP]",
+    "ksu_susfs [add_sus_path] [/system/addon.d]",
+    "ksu_susfs [add_sus_path] [/system/bin/install-recovery.sh]",
+    "ksu_susfs [add_sus_path_loop] [/data/lineageos_updates]",
+    "ksu_susfs [add_sus_path_loop] [/data/local/tmp/frida-server]",
+    "ksu_susfs [add_sus_path_loop] [/data/local/tmp/magisk.log]",
+    "ksu_susfs [add_sus_path_loop] [/data/local/tmp/sub dir]",
+    "ksu_susfs [add_sus_path_loop] [/data/recovery]",
+    "ksu_susfs [add_sus_path_loop] [/product/etc/permissions/privapp-permissions-pixelos.xml]",
+    "ksu_susfs [add_sus_path_loop] [/storage/emulated/0/Android/com.weird.app]",
+    "ksu_susfs [add_sus_path_loop] [/storage/emulated/0/Fox]",
+    "ksu_susfs [add_sus_path_loop] [/storage/emulated/0/TWRP]",
+    "ksu_susfs [add_sus_path_loop] [/system/addon.d/50-lineage.sh]",
+    "ksu_susfs [add_sus_path_loop] [/system/app/crdroid.dir]",
+    "ksu_susfs [add_sus_path_loop] [/system/bin/install-recovery.sh]",
+    "ksu_susfs [add_sus_path_loop] [/system/etc/ROM.EVOLUTION.txt]",
+    "ksu_susfs [add_sus_path_loop] [/system/etc/init/lineage-updater.rc]",
+    "ksu_susfs [add_sus_path_loop] [/system/etc/permissions/org.lineageos.platform.xml]",
+    "ksu_susfs [add_sus_path_loop] [/system/media/Lineage Sounds/ring.ogg]",
+    "ksu_susfs [add_sus_path_loop] [/vendor/etc/init/vendor.lineage.rc]",
+    "ksu_susfs [show] [enabled_features]",
+    "ksu_susfs [show] [version]"
+   ],
+   "changed": {
+    "/data/adb/ksu/nyxsusfs/logs/boot_stage_time.sh": [
+     "0o644",
+     "0:0",
+     "post_fs_data=101.000001\npost_mount=102.000002\nservice=103.000003\nboot_completed=104.000004\n"
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/susfs.log": [
+     "0o644",
+     "0:0",
+     "\n[    1.234567] susfs: init\n[    2.500000] ksu_susfs: something\n[   12.345678] susfs: set SUS_MOUNT for /debug_ramdisk\n[   13.000001] susfs_auto_add_sus_bind_mount: /system/etc/hosts\n[   20.000000] SUSFS: upper-case line\n[  101.000001] susfs: stage marker 1\n[  101.000001] susfs: stage marker 1\n[  102.000002] susfs: stage marker 2\n[  102.000002] susfs: stage marker 2\n[  103.000003] susfs: stage marker 3\n[  103.000003] susfs: stage marker 3\n[  104.000004] susfs: stage marker 4\n[  104.000004] susfs: stage marker 4\n[  105.000005] susfs: stage marker 5"
+    ],
+    "/data/adb/ksu/nyxsusfs/logs/susfs1.log": [
+     "0o644",
+     "0:0",
+     "\n[add_sus_kstat_statically]: nyxsusfs/boot-completed /system/bin/app_process64\n[add_sus_kstat_statically]: nyxsusfs/boot-completed /system/etc/hosts\n[add_sus_kstat_statically]: nyxsusfs/boot-completed /system/etc/hosts\n[add_sus_kstat_statically]: nyxsusfs/boot-completed /system/framework/services.jar\n[add_sus_kstat_statically]: nyxsusfs/boot-completed 1\n[add_sus_kstat_statically]: nyxsusfs/service /missing/orig\n[add_sus_kstat_statically]: nyxsusfs/service /vendor/etc/fstab.qcom\n[open_redirect]: nyxsusfs/boot-completed /system/etc/hosts -> /data/adb/nyxsusfs/hosts\n[open_redirect]: nyxsusfs/boot-completed /system/etc/hosts -> /data/adb/nyxsusfs/hosts2\n[open_redirect]: nyxsusfs/service /missing/orig -> /data/adb/nyxsusfs/missing\n[open_redirect]: nyxsusfs/service /vendor/etc/fstab.qcom -> /data/adb/nyxsusfs/fstab\n[sus_map]: nyxsusfs/boot-completed /data/adb/modules/modA/system/bin/tool\n[sus_map]: nyxsusfs/boot-completed /data/adb/modules/modA/system/lib64/libmodA.so\n[sus_map]: nyxsusfs/boot-completed /data/adb/modules/modA/system/lib64/libmodA.so\n[sus_map]: nyxsusfs/boot-completed /data/adb/modules/modB/zygisk/arm64-v8a.so\n[sus_map]: nyxsusfs/boot-completed /data/adb/modules/modB/zygisk/arm64-v8a.so\n[sus_map]: nyxsusfs/boot-completed /data/adb/modules/modC/system/etc/with space.conf\n[sus_map]: nyxsusfs/boot-completed /data/lineageos_updates\n[sus_map]: nyxsusfs/boot-completed /product/etc/permissions/privapp-permissions-pixelos.xml\n[sus_map]: nyxsusfs/boot-completed /system/addon.d/50-lineage.sh\n[sus_map]: nyxsusfs/boot-completed /system/app/crdroid.dir\n[sus_map]: nyxsusfs/boot-completed /system/etc/ROM.EVOLUTION.txt\n[sus_map]: nyxsusfs/boot-completed /system/etc/init/lineage-updater.rc\n[sus_map]: nyxsusfs/boot-completed /system/etc/permissions/org.lineageos.platform.xml\n[sus_map]: nyxsusfs/boot-completed /system/framework/framework-res.apk\n[sus_map]: nyxsusfs/boot-completed /system/media/Lineage Sounds/ring.ogg\n[sus_map]: nyxsusfs/boot-completed /vendor/etc/init/vendor.lineage.rc\n[sus_mount]: nyxsusfs/post-mount /data/adb/modules/modA/system\n[sus_mount]: nyxsusfs/post-mount /debug_ramdisk\n[sus_path]: nyxsusfs/boot-completed /data/adb/ksu\n[sus_path]: nyxsusfs/boot-completed /data/adb/modules/foo\n[sus_path]: nyxsusfs/boot-completed /data/never_there\n[sus_path]: nyxsusfs/boot-completed /storage/emulated/0/TWRP\n[sus_path]: nyxsusfs/boot-completed /system/addon.d\n[sus_path]: nyxsusfs/boot-completed /system/bin/install-recovery.sh\n[sus_path_loop]: nyxsusfs/boot-completed /data/lineageos_updates\n[sus_path_loop]: nyxsusfs/boot-completed /data/local/tmp/frida-server\n[sus_path_loop]: nyxsusfs/boot-completed /data/local/tmp/magisk.log\n[sus_path_loop]: nyxsusfs/boot-completed /data/local/tmp/sub dir\n[sus_path_loop]: nyxsusfs/boot-completed /data/recovery\n[sus_path_loop]: nyxsusfs/boot-completed /product/etc/permissions/privapp-permissions-pixelos.xml\n[sus_path_loop]: nyxsusfs/boot-completed /storage/emulated/0/Android/com.weird.app\n[sus_path_loop]: nyxsusfs/boot-completed /storage/emulated/0/Fox\n[sus_path_loop]: nyxsusfs/boot-completed /storage/emulated/0/TWRP\n[sus_path_loop]: nyxsusfs/boot-completed /system/addon.d/50-lineage.sh\n[sus_path_loop]: nyxsusfs/boot-completed /system/app/crdroid.dir\n[sus_path_loop]: nyxsusfs/boot-completed /system/bin/install-recovery.sh\n[sus_path_loop]: nyxsusfs/boot-completed /system/etc/ROM.EVOLUTION.txt\n[sus_path_loop]: nyxsusfs/boot-completed /system/etc/init/lineage-updater.rc\n[sus_path_loop]: nyxsusfs/boot-completed /system/etc/permissions/org.lineageos.platform.xml\n[sus_path_loop]: nyxsusfs/boot-completed /system/media/Lineage Sounds/ring.ogg\n[sus_path_loop]: nyxsusfs/boot-completed /vendor/etc/init/vendor.lineage.rc\n[try_umount]: nyxsusfs/post-mount /data/adb/modules/modA/system/bin/tool\n[try_umount]: nyxsusfs/post-mount /system/etc/hosts\nnyxsusfs/boot-completed: [hide_cusrom][2]\nnyxsusfs/post-fs-data: [logging_initialized]"
+    ],
+    "/data/adb/ksu/nyxsusfs/susfs_stats.txt": [
+     "0o644",
+     "0:0",
+     "sus_map=0\nsus_mount=5\ntry_umount=<racy>\nsus_path=6\n"
+    ],
+    "/data/adb/modules/nyxsusfs/module.prop": [
+     "0o644",
+     "0:0",
+     "id=nyxsusfs\nname=NyxSUSFS\nversion=<module.prop>\nversionCode=<module.prop>\nauthor=poqdavid\ndescription=[✅ Active] susfs v1.5.5 — details in the WebUI\nupdateJson=https://raw.githubusercontent.com/poqdavid/nyxsusfs/main/update.json\n"
+    ]
+   },
+   "removed": []
+  }
+ ]
+}

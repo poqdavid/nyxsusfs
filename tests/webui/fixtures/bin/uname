@@ -1,0 +1,2 @@
+#!/bin/sh
+[ "$1" = "-r" ] && echo "5.10.999-nyx-spoofed" || exec /usr/bin/env uname "$@"

@@ -1,0 +1,2 @@
+#!/bin/sh
+case "$1" in ro.build.version.release) echo 15;; ro.build.version.sdk) echo 35;; ro.product.model) echo SM-A155F;; ro.product.manufacturer) echo samsung;; *) echo;; esac

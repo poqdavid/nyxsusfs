@@ -45,6 +45,12 @@ The home screen shows four live counters — **sus path**, **sus maps**, **sus m
 
 ---
 
+## 🧪 Tests
+
+The boot stages, the WebUI and the installer are tested in CI on every push. See [tests/README.md](tests/README.md) to run the tests locally.
+
+---
+
 ## 🔗 Additional Resources
 
 - 🥷 [SUSFS (susfs4ksu)](https://gitlab.com/simonpunk/susfs4ksu)
